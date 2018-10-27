@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: pro
+mybatis:   
+  typeAliasesPackage: com.swinginwind.xql.pay.entity
+logging:
+  file: xql-pay.log
+
+
+

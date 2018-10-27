@@ -1,0 +1,13 @@
+server:
+  port: 9090
+  servlet:
+    path: /
+spring:
+  datasource:
+      name: mydb  
+      type: com.alibaba.druid.pool.DruidDataSource  
+      username: root
+      password: gener
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://192.168.3.28:3306/xql?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+

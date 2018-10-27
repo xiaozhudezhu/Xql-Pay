@@ -1,0 +1,166 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta
+	content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+	name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<meta content="email=no" name="format-detection">
+<!-- 引入bootstrap样式 -->
+<link
+	href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- 引入bootstrap-table样式 -->
+<link
+	href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css"
+	rel="stylesheet">
+
+<title>付款记录</title>
+</head>
+<body ontouchstart class="">
+	<table id="payRecordTable" class="table table-no-bordered" data-toggle="table"
+		data-side-pagination="server" data-url="payRecord/query"
+		data-height="500" data-pagination="true" data-striped="true"
+		data-sortable="true" data-sort-name="pay_time" data-sort-order="desc"
+		data-show-columns="true" data-show-refresh="true" data-search="true"
+		data-search-on-enter-ke="true" data-unique-id="id" data-search-text="搜索功能正在开发中">
+		<thead>
+			<tr>
+				<th data-field="state" data-checkbox="true"></th>
+				<th data-field="productName" data-align="center"
+					data-sortable="true" data-sort-name="product_name">产品</th>
+				<th data-field="payWay" data-align="center" data-sortable="true"
+					data-sort-name="pay_way" data-formatter="formatPayWay">支付方式</th>
+				<th data-field="userName" data-align="center" data-sortable="true"
+					data-sort-name="user_name" data-formatter="formatUserName">客户</th>
+				<th data-field="totalAmount" data-align="center"
+					data-sortable="true" data-sort-name="total_amount">付款金额</th>
+				<th data-field="payTime" data-align="center" data-sortable="true"
+					data-sort-name="pay_time">付款时间</th>
+				<th data-align="center" data-formatter="operateFormatter">操作</th>
+			</tr>
+		</thead>
+	</table>
+	<div class="modal fade" id="refundModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="exampleModalLabel">办理退款</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">客户：</label>
+							<div class="col-sm-2">
+								<p class="form-control-static" id="refundUserName">test</p>
+							</div>
+							<label class="col-sm-3 control-label">订单金额：</label>
+							<div class="col-sm-3">
+								<p class="form-control-static" id="refundTotalAmount">300</p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">商户单号：</label>
+							<div class="col-sm-8">
+								<p class="form-control-static" id="refundOutTradeNo"></p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label">交易单号：</label>
+							<div class="col-sm-8">
+								<p class="form-control-static" id="refundTradeNo"></p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="refundAmount" class="col-sm-3 control-label">退款金额:</label> 
+							<div class="col-sm-8">
+							<input
+								type="text" class="form-control" id="refundAmount">
+								</div>
+						</div>
+						<div class="form-group">
+							<label for="refundReason" class="col-sm-3 control-label">退款原因:</label>
+							<div class="col-sm-8">
+							<textarea class="form-control" id="refundReason"></textarea>
+							</div>
+						</div>
+						<input type="hidden" class="form-control" id="payRecordId">
+						<input type="hidden" class="form-control" id="payWay">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="refund()">退款</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+
+<script
+	src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- bootstrap-table.min.js -->
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+<!-- 引入中文语言包 -->
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript">
+	function formatPayWay(value) {
+		return value == 'alipay' ? '支付宝' : '微信支付';
+	}
+	
+	function formatUserName(value, record) {
+		return record.userName || record.buyerName || record.buyerId || '-';
+	}
+
+	function operateFormatter(value, row, index) {
+		console.log(row);
+		return [
+				'<a class="like" href="javascript:openRefundModal(' + row.id + ')" title="退款">',
+				'<i class="fa fa-heart-o"></i>', '退款</a>  ' ].join('');
+	}
+	
+	function openRefundModal(id) {
+		var row = $('#payRecordTable').bootstrapTable('getRowByUniqueId', id);
+		$('#refundUserName').text(row.userName);
+		$('#refundTotalAmount').text(row.totalAmount);
+		$('#refundOutTradeNo').text(row.outTradeNo);
+		$('#refundTradeNo').text(row.tradeNo);
+		$('#refundAmount').val(row.totalAmount);
+		$('#refundReason').val('');
+		$('#payRecordId').val(id);
+		$('#payWay').val(row.payWay);
+		$('#refundModal').modal();
+	}
+	
+	function refund() {
+		console.log('refund');
+		$.post($('#payWay').val() + '/tradeRefund', {
+			payRecordId : $('#payRecordId').val(),
+			outTradeNo : $('#refundOutTradeNo').text(),
+			tradeNo : $('#refundTradeNo').text(),
+			refundAmount : $('#refundAmount').val(),
+			refundReason : $('#refundReason').val(),
+			totalAmount : $('#refundTotalAmount').text()
+		}, function(data) {
+			if(data == 'success') {
+				alert('退款成功');
+				$('#refundModal').modal('hide');
+			}
+			else
+				alert(data);
+		});
+	}
+	
+</script>
+</html>

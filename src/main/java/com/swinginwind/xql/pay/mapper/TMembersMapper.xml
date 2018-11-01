@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.swinginwind.xql.pay.mapper.TMembersMapper" >
+  <resultMap id="BaseResultMap" type="com.swinginwind.xql.pay.entity.TMembers" >
+    <id column="UserID" property="userid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="Password" property="password" jdbcType="VARCHAR" />
+    <result column="UserStatus" property="userstatus" jdbcType="CHAR" />
+    <result column="TokenCode" property="tokencode" jdbcType="VARCHAR" />
+    <result column="YearsPlay" property="yearsplay" jdbcType="CHAR" />
+    <result column="WeChatID" property="wechatid" jdbcType="VARCHAR" />
+    <result column="Gender" property="gender" jdbcType="CHAR" />
+    <result column="Age" property="age" jdbcType="CHAR" />
+    <result column="PhoneNum" property="phonenum" jdbcType="VARCHAR" />
+    <result column="Level" property="level" jdbcType="CHAR" />
+    <result column="HoursPractice" property="hourspractice" jdbcType="CHAR" />
+    <result column="AchivingLevel" property="achivinglevel" jdbcType="CHAR" />
+    <result column="Country" property="country" jdbcType="VARCHAR" />
+    <result column="Province" property="province" jdbcType="VARCHAR" />
+    <result column="City" property="city" jdbcType="VARCHAR" />
+    <result column="HeadImgUrl" property="headimgurl" jdbcType="VARCHAR" />
+    <result column="Language" property="language" jdbcType="VARCHAR" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    UserID, Name, ID, Password, UserStatus, TokenCode, YearsPlay, WeChatID, Gender, Age, 
+    PhoneNum, Level, HoursPractice, AchivingLevel, Country, Province, City, HeadImgUrl, 
+    Language, CreateTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tsports.tmembers
+    where UserID = #{userid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tsports.tmembers
+    where UserID = #{userid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.swinginwind.xql.pay.entity.TMembers" keyProperty="userid" useGeneratedKeys="true">
+    insert into tsports.tmembers (UserID, Name, ID, 
+      Password, UserStatus, TokenCode, 
+      YearsPlay, WeChatID, Gender, 
+      Age, PhoneNum, Level, HoursPractice, 
+      AchivingLevel, Country, Province, 
+      City, HeadImgUrl, Language, 
+      CreateTime)
+    values (#{userid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{id,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{userstatus,jdbcType=CHAR}, #{tokencode,jdbcType=VARCHAR}, 
+      #{yearsplay,jdbcType=CHAR}, #{wechatid,jdbcType=VARCHAR}, #{gender,jdbcType=CHAR}, 
+      #{age,jdbcType=CHAR}, #{phonenum,jdbcType=VARCHAR}, #{level,jdbcType=CHAR}, #{hourspractice,jdbcType=CHAR}, 
+      #{achivinglevel,jdbcType=CHAR}, #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{headimgurl,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.swinginwind.xql.pay.entity.TMembers" >
+    insert into tsports.tmembers
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        UserID,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="password != null" >
+        Password,
+      </if>
+      <if test="userstatus != null" >
+        UserStatus,
+      </if>
+      <if test="tokencode != null" >
+        TokenCode,
+      </if>
+      <if test="yearsplay != null" >
+        YearsPlay,
+      </if>
+      <if test="wechatid != null" >
+        WeChatID,
+      </if>
+      <if test="gender != null" >
+        Gender,
+      </if>
+      <if test="age != null" >
+        Age,
+      </if>
+      <if test="phonenum != null" >
+        PhoneNum,
+      </if>
+      <if test="level != null" >
+        Level,
+      </if>
+      <if test="hourspractice != null" >
+        HoursPractice,
+      </if>
+      <if test="achivinglevel != null" >
+        AchivingLevel,
+      </if>
+      <if test="country != null" >
+        Country,
+      </if>
+      <if test="province != null" >
+        Province,
+      </if>
+      <if test="city != null" >
+        City,
+      </if>
+      <if test="headimgurl != null" >
+        HeadImgUrl,
+      </if>
+      <if test="language != null" >
+        Language,
+      </if>
+      <if test="createtime != null" >
+        CreateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="userstatus != null" >
+        #{userstatus,jdbcType=CHAR},
+      </if>
+      <if test="tokencode != null" >
+        #{tokencode,jdbcType=VARCHAR},
+      </if>
+      <if test="yearsplay != null" >
+        #{yearsplay,jdbcType=CHAR},
+      </if>
+      <if test="wechatid != null" >
+        #{wechatid,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=CHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=CHAR},
+      </if>
+      <if test="phonenum != null" >
+        #{phonenum,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=CHAR},
+      </if>
+      <if test="hourspractice != null" >
+        #{hourspractice,jdbcType=CHAR},
+      </if>
+      <if test="achivinglevel != null" >
+        #{achivinglevel,jdbcType=CHAR},
+      </if>
+      <if test="country != null" >
+        #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="headimgurl != null" >
+        #{headimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="language != null" >
+        #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.swinginwind.xql.pay.entity.TMembers" >
+    update tsports.tmembers
+    <set >
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="id != null" >
+        ID = #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        Password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="userstatus != null" >
+        UserStatus = #{userstatus,jdbcType=CHAR},
+      </if>
+      <if test="tokencode != null" >
+        TokenCode = #{tokencode,jdbcType=VARCHAR},
+      </if>
+      <if test="yearsplay != null" >
+        YearsPlay = #{yearsplay,jdbcType=CHAR},
+      </if>
+      <if test="wechatid != null" >
+        WeChatID = #{wechatid,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        Gender = #{gender,jdbcType=CHAR},
+      </if>
+      <if test="age != null" >
+        Age = #{age,jdbcType=CHAR},
+      </if>
+      <if test="phonenum != null" >
+        PhoneNum = #{phonenum,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        Level = #{level,jdbcType=CHAR},
+      </if>
+      <if test="hourspractice != null" >
+        HoursPractice = #{hourspractice,jdbcType=CHAR},
+      </if>
+      <if test="achivinglevel != null" >
+        AchivingLevel = #{achivinglevel,jdbcType=CHAR},
+      </if>
+      <if test="country != null" >
+        Country = #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        Province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        City = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="headimgurl != null" >
+        HeadImgUrl = #{headimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="language != null" >
+        Language = #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where UserID = #{userid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.swinginwind.xql.pay.entity.TMembers" >
+    update tsports.tmembers
+    set Name = #{name,jdbcType=VARCHAR},
+      ID = #{id,jdbcType=VARCHAR},
+      Password = #{password,jdbcType=VARCHAR},
+      UserStatus = #{userstatus,jdbcType=CHAR},
+      TokenCode = #{tokencode,jdbcType=VARCHAR},
+      YearsPlay = #{yearsplay,jdbcType=CHAR},
+      WeChatID = #{wechatid,jdbcType=VARCHAR},
+      Gender = #{gender,jdbcType=CHAR},
+      Age = #{age,jdbcType=CHAR},
+      PhoneNum = #{phonenum,jdbcType=VARCHAR},
+      Level = #{level,jdbcType=CHAR},
+      HoursPractice = #{hourspractice,jdbcType=CHAR},
+      AchivingLevel = #{achivinglevel,jdbcType=CHAR},
+      Country = #{country,jdbcType=VARCHAR},
+      Province = #{province,jdbcType=VARCHAR},
+      City = #{city,jdbcType=VARCHAR},
+      HeadImgUrl = #{headimgurl,jdbcType=VARCHAR},
+      Language = #{language,jdbcType=VARCHAR},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP}
+    where UserID = #{userid,jdbcType=INTEGER}
+  </update>
+  <select id="selectByWechatId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from tsports.tmembers
+    where WeChatID = #{wechatid}
+  </select>
+</mapper>

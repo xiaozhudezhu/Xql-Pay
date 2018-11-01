@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+	  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+	  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+	<!-- classPathEntry:数据库的JDBC驱动-->
+	<classPathEntry location="./lib/mysql-connector-java-5.1.12-bin.jar" />
+	<context id="Oracle2Tables" targetRuntime="MyBatis3">
+		<plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+			<property name="searchString" value="Example$" />
+			<property name="replaceString" value="Criteria" />
+		</plugin>
+		
+		<!-- 去除自动生成的注释 -->
+		<commentGenerator type="org.mybatis.generator.internal.CustomeCommentGenerator">
+			<!-- <property name="suppressAllComments" value="false" /> -->
+			<!-- <property name="suppressDate" value="false" /> -->
+			<!-- <property name="suppressGetAndSetComments" value="false" />
+			<property name="suppressDaoMethodComments" value="false" />
+			<property name="suppressMapperComments" value="false" /> -->
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.3.28:3306/tsports"
+			userId="root" password="gener">
+			<!-- 针对oracle数据库 -->
+<!-- 		    <property name="remarks" value="true"></property>
+ -->		    <!-- 针对mysql数据库 -->
+		    <property name="useInformationSchema" value="true"></property>
+		</jdbcConnection>
+		
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="true" />
+		</javaTypeResolver>
+		
+		<!--model生成 到什么位置 -->
+		<javaModelGenerator targetPackage="${model.name}.${business.name}.entity"
+			targetProject="${generated.source.dir}/src/main/java">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+		<!--sqMapXX.xml生成的位置 -->
+		<sqlMapGenerator targetPackage="${model.name}.${business.name}.mapper"
+			targetProject="${generated.source.dir}/src/main/java">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+		<!--客户端应用接口生成的位置(DAO Interface)-->
+		<javaClientGenerator type="XMLMAPPER"
+			targetPackage="${model.name}.${business.name}.mapper" 
+			targetProject="${generated.source.dir}/src/main/java">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+	
+	
+		<table tableName="ex_temp_data" domainObjectName="ExTempData"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
+			selectByExampleQueryId="false" schema="wdn">
+			<property name="useActualColumnNames" value="false" />
+			<property name="ignoreQualifiersAtRuntime" value="true" />
+		</table>
+		
+	</context>
+</generatorConfiguration>

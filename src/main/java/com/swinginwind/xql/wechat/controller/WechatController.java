@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.swinginwind.xql.pay.entity.LoginRecord;
+import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.entity.WxPayBean;
 import com.swinginwind.xql.pay.mapper.LoginRecordMapper;
+import com.swinginwind.xql.pay.service.UserService;
 
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -49,9 +51,10 @@ public class WechatController {
 
     @Autowired
     private WxMpMessageRouter router;
+
     
     @Autowired
-    private LoginRecordMapper loginRecordMapper;
+    private UserService userService;
     
     
     /**
@@ -92,17 +95,15 @@ public class WechatController {
         try {
             wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
             user = wxMpService.oauth2getUserInfo(wxMpOAuth2AccessToken, null);
-            LoginRecord record = new LoginRecord(user);
-            loginRecordMapper.insert(record);
-            
         } catch (WxErrorException e) {
             e.printStackTrace();
-        //抛出异常 自定义的  方便处理  可自己定义
-            
+            //抛出异常 自定义的  方便处理  可自己定义
         }
         if(user != null) {
+        	TMembers member = userService.wechatLogin(user);
         	request.getSession().setAttribute("wxUser", user);
         	request.getSession().setAttribute("openId", user.getOpenId());
+        	return "redirect:/?token=" + member.getLoginToken();
         }
         return "redirect:/";
     }
@@ -115,16 +116,15 @@ public class WechatController {
         try {
             wxMpOAuth2AccessToken = wxWebService.oauth2getAccessToken(code);
             user = wxWebService.oauth2getUserInfo(wxMpOAuth2AccessToken, null);
-            LoginRecord record = new LoginRecord(user);
-            loginRecordMapper.insert(record);
         } catch (WxErrorException e) {
             e.printStackTrace();
-        //抛出异常 自定义的  方便处理  可自己定义
-            
+            //抛出异常 自定义的  方便处理  可自己定义    
         }
         if(user != null) {
+        	TMembers member = userService.wechatLogin(user);
         	request.getSession().setAttribute("wxUser", user);
         	request.getSession().setAttribute("openId", user.getOpenId());
+        	return "redirect:/?token=" + member.getLoginToken();
         }
         return "redirect:/";
     }

@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.swinginwind.xql.pay.entity.LoginRecord;
 import com.swinginwind.xql.pay.mapper.LoginRecordMapper;
+import com.swinginwind.xql.pay.mapper.TMembersMapper;
 
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
@@ -17,6 +18,9 @@ public class RunTest {
 	
 	@Autowired
     private LoginRecordMapper loginRecordMapper;
+	
+	@Autowired
+    private TMembersMapper tMembersMapper;
 
     @Test
     public void test() throws Exception {

@@ -66,5 +66,16 @@ public class UserServiceImpl implements UserService {
         exTempDataMapper.insert(tempData);
 		return member;
 	}
+	
+	@Override
+	public TMembers selectByUserId(int userId) {
+		return tMembersMapper.selectByPrimaryKey(userId);
+	}
+	
+	@Override
+	public int saveUserInfo(TMembers member) {
+		return tMembersMapper.updateByPrimaryKeySelective(member);
+	}
+	
 
 }

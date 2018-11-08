@@ -116,6 +116,11 @@ public class IndexController {
     	return "refund_record.html";
     }
     
+    @RequestMapping(value = "/userPage")
+    public String userPage(){
+    	return "user_page.html";
+    }
+    
 
     @RequestMapping("/success")
 	public String success() {

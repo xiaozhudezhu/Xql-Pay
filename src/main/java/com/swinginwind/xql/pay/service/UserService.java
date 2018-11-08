@@ -8,4 +8,8 @@ public interface UserService {
 	
 	TMembers wechatLogin(WxMpUser wxUser);
 
+	TMembers selectByUserId(int userId);
+
+	int saveUserInfo(TMembers member);
+
 }

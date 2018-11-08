@@ -102,8 +102,9 @@ public class WechatController {
         if(user != null) {
         	TMembers member = userService.wechatLogin(user);
         	request.getSession().setAttribute("wxUser", user);
+        	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
-        	return "redirect:/?token=" + member.getLoginToken();
+        	return "redirect:http://localhost:81/home.php?token=" + member.getLoginToken();
         }
         return "redirect:/";
     }
@@ -123,8 +124,9 @@ public class WechatController {
         if(user != null) {
         	TMembers member = userService.wechatLogin(user);
         	request.getSession().setAttribute("wxUser", user);
+        	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
-        	return "redirect:/?token=" + member.getLoginToken();
+        	return "redirect:http://localhost:81/home.php?token=" + member.getLoginToken();
         }
         return "redirect:/";
     }

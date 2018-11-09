@@ -21,7 +21,7 @@
 			<property name="suppressMapperComments" value="false" /> -->
 		</commentGenerator>
 
-		<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.3.28:3306/tsports"
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.3.28:3306/xql"
 			userId="root" password="gener">
 			<!-- 针对oracle数据库 -->
 <!-- 		    <property name="remarks" value="true"></property>
@@ -52,7 +52,7 @@
 		</javaClientGenerator>
 	
 	
-		<table tableName="ex_temp_data" domainObjectName="ExTempData"
+		<table tableName="pay_record" domainObjectName="PayRecord"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false" schema="wdn">

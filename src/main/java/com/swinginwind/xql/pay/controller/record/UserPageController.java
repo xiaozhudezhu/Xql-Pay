@@ -51,5 +51,19 @@ public class UserPageController {
         }
 		return result;
 	}
+    
+    
+    @RequestMapping(value = "/setUser")
+    @ResponseBody
+    public Map<String, Object>  setUser(int userId, HttpServletRequest request) {
+    	Map<String, Object> result = new HashMap<String, Object>();
+    	TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
+        if(memberT == null || !memberT.getUserid().equals(userId)) {
+        	memberT = userService.selectByUserId(userId);
+        	request.getSession().setAttribute("userInfo", memberT);
+        }
+        result.put("status", "success");
+		return result;
+	}
 	
 }

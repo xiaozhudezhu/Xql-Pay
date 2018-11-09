@@ -15,8 +15,10 @@ import com.jpay.vo.AjaxResult;
 import com.swinginwind.xql.pay.entity.AliPayBean;
 import com.swinginwind.xql.pay.entity.PayRecord;
 import com.swinginwind.xql.pay.entity.RefundRecord;
+import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.mapper.PayRecordMapper;
 import com.swinginwind.xql.pay.mapper.RefundRecordMapper;
+import com.swinginwind.xql.pay.service.UserService;
 
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
@@ -50,6 +52,9 @@ public class AliPayController extends AliPayApiController {
 
 	@Autowired
 	private RefundRecordMapper refundRecordMapper;
+	
+	@Autowired
+	private UserService userService;
 
 	private AjaxResult result = new AjaxResult();
 
@@ -101,11 +106,10 @@ public class AliPayController extends AliPayApiController {
 	@RequestMapping(value = "/wapPay")
 	@ResponseBody
 	public void wapPay(HttpServletRequest request, HttpServletResponse response, PayRecord payRecord) {
-		String body = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId();
+		TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+		String body = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (member != null ? member.getUserid() : "");
 		String subject = "学球乐-" + payRecord.getProductName();
 		String totalAmount = payRecord.getTotalAmount().toString();
-		WxMpUser user = (WxMpUser) request.getSession().getAttribute("wxUser");
-		String passbackParams = payRecord.getProductId() + "###" + payRecord.getProductName() + "###" + (user != null ? user.getNickname() : "");
 		String returnUrl = aliPayBean.getDomain() + "/alipay/return_url";
 		String notifyUrl = aliPayBean.getDomain() + "/alipay/notify_url";
 
@@ -113,7 +117,6 @@ public class AliPayController extends AliPayApiController {
 		model.setBody(body);
 		model.setSubject(subject);
 		model.setTotalAmount(totalAmount);
-		model.setPassbackParams(passbackParams);
 		String outTradeNo = StringUtils.getOutTradeNo();
 		System.out.println("wap outTradeNo>" + outTradeNo);
 		model.setOutTradeNo(outTradeNo);
@@ -149,11 +152,11 @@ public class AliPayController extends AliPayApiController {
 			 * 
 			 * AliPayApi.tradePage(response,model , notifyUrl, returnUrl);
 			 */
-			WxMpUser user = (WxMpUser) request.getSession().getAttribute("wxUser");
-			String body = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (user != null ? user.getNickname() : "");;
+			TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+			String body = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (member != null ? member.getUserid() : "");
 			String subject = "学球乐-" + payRecord.getProductName();
 			String totalAmount = payRecord.getTotalAmount().toString();
-			String passbackParams = payRecord.getProductId() + "###" + payRecord.getProductName() + "###" + (user != null ? user.getNickname() : "");
+			String passbackParams = payRecord.getProductId() + "###" + payRecord.getProductName() + "###" + (member != null ? member.getUserid() : "");
 			String returnUrl = aliPayBean.getDomain() + "/alipay/return_url";
 			String notifyUrl = aliPayBean.getDomain() + "/alipay/notify_url";
 
@@ -514,8 +517,13 @@ public class AliPayController extends AliPayApiController {
 						String[] strArray = body.replace("学球乐-", "").split("###");
 						record.setProductId(Integer.parseInt(strArray[1]));
 						record.setProductName(strArray[0]);
-						if(strArray.length > 2)
-							record.setUserName(strArray[2]);
+						if(strArray.length > 2) {
+							TMembers member = userService.selectByUserId(Integer.parseInt(strArray[2]));
+							if(member != null) {
+								record.setUserId(member.getUserid().toString());
+								record.setUserName(member.getName());
+							}
+						}
 					}
 
 					record.setReceiptAmount(new BigDecimal(params.get("receipt_amount")));
@@ -528,6 +536,11 @@ public class AliPayController extends AliPayApiController {
 					if(user != null) {
 						record.setUserId(user.getOpenId());
 						record.setUserName(user.getNickname());
+					}
+					TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+					if(member != null) {
+						record.setUserId(member.getUserid().toString());
+						record.setUserName(member.getName());
 					}
 					record.setOutTradeNo(params.get("out_trade_no"));
 					payRecordMapper.insert(record);

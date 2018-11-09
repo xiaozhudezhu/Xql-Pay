@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 			member.setWechatid(wxUser.getOpenId());
 			member.setCountry(wxUser.getCountry());
 			member.setProvince(wxUser.getProvince());
-			member.setCity(wxUser.getCity());
+			member.setCity(wxUser.getProvince() + "/" + wxUser.getCity());
 			member.setGender(wxUser.getSexId() == 1 ? "m" : "f");
 			member.setLanguage(wxUser.getLanguage());
 			member.setHeadimgurl(wxUser.getHeadImgUrl());

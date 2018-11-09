@@ -157,7 +157,7 @@ function wxPayWeb(payWay, payMethod, totalAmount, productName, productId) {
 		$.hideLoading();
 		if (res.code == 0) {
 			var data = $.parseJSON(res.data);
-
+			//top.postMessage({ type: 'mpPay', data: data }, '*');
 			if (typeof WeixinJSBridge == "undefined") {
 				if (document.addEventListener) {
 					document.addEventListener('WeixinJSBridgeReady',

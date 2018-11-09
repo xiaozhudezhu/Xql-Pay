@@ -39,11 +39,13 @@ import com.swinginwind.xql.pay.entity.BaseProduct;
 import com.swinginwind.xql.pay.entity.H5ScencInfo;
 import com.swinginwind.xql.pay.entity.PayRecord;
 import com.swinginwind.xql.pay.entity.RefundRecord;
+import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.entity.WxPayBean;
 import com.swinginwind.xql.pay.entity.H5ScencInfo.H5;
 import com.swinginwind.xql.pay.mapper.BaseProductMapper;
 import com.swinginwind.xql.pay.mapper.PayRecordMapper;
 import com.swinginwind.xql.pay.mapper.RefundRecordMapper;
+import com.swinginwind.xql.pay.service.UserService;
 import com.swinginwind.xql.wechat.config.WechatMpProperties;
 import com.jpay.weixin.api.WxPayApiConfigKit;
 
@@ -61,6 +63,9 @@ public class WxPayController extends WxPayApiController {
 	WechatMpProperties wechatMpProperties;
 
 	String notify_url;
+	
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private PayRecordMapper payRecordMapper;
@@ -133,8 +138,8 @@ public class WxPayController extends WxPayApiController {
 		h5_info.setWap_url(wxPayBean.getDomain());
 		h5_info.setWap_name("学球乐");
 		sceneInfo.setH5_info(h5_info);
-		WxMpUser user = (WxMpUser) request.getSession().getAttribute("wxUser");
-		String attach = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (user != null ? user.getNickname() : "");
+		TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+		String attach = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (member != null ? member.getUserid() : "");
 		String subject = "学球乐-" + payRecord.getProductName();
 		String totalAmount = payRecord.getTotalAmount().toString();
 		Map<String, String> params = WxPayApiConfigKit.getWxPayApiConfig().setAttach(attach)
@@ -192,8 +197,8 @@ public class WxPayController extends WxPayApiController {
 			ip = "127.0.0.1";
 		}
 		ip = "127.0.0.1";
-		WxMpUser user = (WxMpUser) request.getSession().getAttribute("wxUser");
-		String attach = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (user != null ? user.getNickname() : "");
+		TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+		String attach = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (member != null ? member.getUserid() : "");
 		String subject = "学球乐-" + payRecord.getProductName();
 		String totalAmount = payRecord.getTotalAmount().toString();
 		Map<String, String> params = WxPayApiConfigKit.getWxPayApiConfig().setAttach(attach)
@@ -242,8 +247,11 @@ public class WxPayController extends WxPayApiController {
 			}
 			WxPayApiConfig config = WxPayApiConfigKit.getWxPayApiConfig();
 			// 获取扫码支付（模式一）url
-
-			String qrCodeUrl = WxPayApi.getCodeUrl(config.getAppId(), config.getMchId(), product_id,
+			TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+			String productInfo = product_id;
+			if(member != null)
+				productInfo += "_" + member.getUserid();
+			String qrCodeUrl = WxPayApi.getCodeUrl(config.getAppId(), config.getMchId(), productInfo,
 					config.getPaternerKey(), true);
 			log.info(qrCodeUrl);
 			// 生成二维码保存的路径
@@ -669,8 +677,13 @@ public class WxPayController extends WxPayApiController {
 						String[] strArray = attach.replace("学球乐-", "").split("###");
 						record.setProductId(Integer.parseInt(strArray[1]));
 						record.setProductName(strArray[0]);
-						if(strArray.length > 2)
-							record.setUserName(strArray[2]);
+						if(strArray.length > 2) {
+							TMembers member = userService.selectByUserId(Integer.parseInt(strArray[2]));
+							if(member != null) {
+								record.setUserId(member.getUserid().toString());
+								record.setUserName(member.getName());
+							}
+						}
 
 					}
 					
@@ -680,8 +693,13 @@ public class WxPayController extends WxPayApiController {
 					record.setSellerName(mch_id);
 					record.setTotalAmount(new BigDecimal(total_fee).divide(new BigDecimal(100)));
 					record.setTradeNo(transaction_id);
-					record.setUserId(openId);
+					//record.setUserId(openId);
 					record.setOutTradeNo(out_trade_no);
+					TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+					if(member != null) {
+						record.setUserId(member.getUserid().toString());
+						record.setUserName(member.getName());
+					}
 					payRecordMapper.insert(record);
 				}
 				else
@@ -768,8 +786,13 @@ public class WxPayController extends WxPayApiController {
 					record.setSellerName(mch_id);
 					record.setTotalAmount(new BigDecimal(total_fee).divide(new BigDecimal(100)));
 					record.setTradeNo(transaction_id);
-					record.setUserId(openId);
+					//record.setUserId(openId);
 					record.setOutTradeNo(out_trade_no);
+					TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
+					if(member != null) {
+						record.setUserId(member.getUserid().toString());
+						record.setUserName(member.getName());
+					}
 					payRecordMapper.insert(record);
 				}
 				else
@@ -827,13 +850,14 @@ public class WxPayController extends WxPayApiController {
 				ip = "127.0.0.1";
 			}
 			ip = "127.0.0.1";
-			List<BaseProduct> productList = baseProductMapper.getById(Integer.parseInt(product_id));
+			String[] productInfos = product_id.split("_");
+			List<BaseProduct> productList = baseProductMapper.getById(Integer.parseInt(productInfos[0]));
 			if(productList.size() == 0) {
 				return null;
 			}
 			BaseProduct product = productList.get(0);
-			WxMpUser user = (WxMpUser) request.getSession().getAttribute("wxUser");
-			String attach = "学球乐-" + product.getName() + "###" + product.getId() + "###" + (user != null ? user.getNickname() : "");
+			
+			String attach = "学球乐-" + product.getName() + "###" + product.getId() + "###" + (productInfos.length == 2 ? productInfos[1] : "");
 			String subject = "学球乐-" + product.getName();
 			String totalAmount = product.getAmount().multiply(new BigDecimal(100)).intValue() + "";
 			Map<String, String> params = WxPayApiConfigKit.getWxPayApiConfig().setAttach(attach)

@@ -24,8 +24,9 @@
 		data-side-pagination="server" data-url="payRecord/query"
 		data-height="450" data-pagination="true" data-striped="true"
 		data-sortable="true" data-sort-name="pay_time" data-sort-order="desc"
-		data-show-columns="true" data-show-refresh="true" data-search="true"
-		data-search-on-enter-ke="true" data-unique-id="id" data-search-text="搜索功能正在开发中">
+		data-show-columns="true" data-show-refresh="true" data-search="false"
+		data-search-on-enter-ke="true" data-unique-id="id" data-search-text="搜索功能正在开发中"
+		data-smart-display="true">
 		<thead>
 			<tr>
 				<th data-field="state" data-checkbox="true"></th>
@@ -34,12 +35,12 @@
 				<th data-field="payWay" data-align="center" data-sortable="true"
 					data-sort-name="pay_way" data-formatter="formatPayWay">支付方式</th>
 				<th data-field="userName" data-align="center" data-sortable="true"
-					data-sort-name="user_name" data-formatter="formatUserName">客户</th>
+					data-sort-name="user_name" data-visible="false" data-formatter="formatUserName">客户</th>
 				<th data-field="totalAmount" data-align="center"
 					data-sortable="true" data-sort-name="total_amount">付款金额</th>
 				<th data-field="payTime" data-align="center" data-sortable="true"
 					data-sort-name="pay_time">付款时间</th>
-				<th data-align="center" data-formatter="operateFormatter">操作</th>
+				<th data-align="center" data-visible="false" data-formatter="operateFormatter">操作</th>
 			</tr>
 		</thead>
 	</table>
@@ -124,10 +125,12 @@
 	}
 
 	function operateFormatter(value, row, index) {
-		console.log(row);
-		return [
+		if(row.admin)
+			return [
 				'<a class="like" href="javascript:openRefundModal(' + row.id + ')" title="退款">',
 				'<i class="fa fa-heart-o"></i>', '退款</a>  ' ].join('');
+		else
+			return '';
 	}
 	
 	function openRefundModal(id) {
@@ -144,7 +147,6 @@
 	}
 	
 	function refund() {
-		console.log('refund');
 		$.post($('#payWay').val() + '/tradeRefund', {
 			payRecordId : $('#payRecordId').val(),
 			outTradeNo : $('#refundOutTradeNo').text(),

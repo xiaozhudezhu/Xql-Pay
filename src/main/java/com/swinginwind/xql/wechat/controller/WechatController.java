@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.swinginwind.xql.pay.config.AppConfig;
 import com.swinginwind.xql.pay.entity.LoginRecord;
 import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.entity.WxPayBean;
@@ -55,6 +56,9 @@ public class WechatController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private AppConfig appConfig;
     
     
     /**
@@ -104,7 +108,11 @@ public class WechatController {
         	request.getSession().setAttribute("wxUser", user);
         	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
-        	return "redirect:http://localhost:81/home.php?token=" + member.getLoginToken();
+        	System.out.println("MP微信用户信息获取成功,code:" + code + ";token:" + wxMpOAuth2AccessToken );
+        	return "redirect:" + appConfig.getXqlUrl() + "/home.php?token=" + member.getLoginToken();
+        }
+        else {
+        	System.out.println("MP微信用户信息获取失败,code:" + code + ";token:" + wxMpOAuth2AccessToken );
         }
         return "redirect:/";
     }
@@ -126,7 +134,11 @@ public class WechatController {
         	request.getSession().setAttribute("wxUser", user);
         	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
-        	return "redirect:http://localhost:81/home.php?token=" + member.getLoginToken();
+        	System.out.println("WEB微信用户信息获取成功,code:" + code + ";token:" + wxMpOAuth2AccessToken );
+        	return "redirect:" + appConfig.getXqlUrl() + "/home.php?token=" + member.getLoginToken();
+        }
+        else {
+        	System.out.println("WEB微信用户信息获取失败,code:" + code + ";token:" + wxMpOAuth2AccessToken );
         }
         return "redirect:/";
     }

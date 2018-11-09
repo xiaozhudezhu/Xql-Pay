@@ -49,6 +49,8 @@ public class PayRecord {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
 	private Date recordTime;
 	
+	private boolean isAdmin;
+	
 	private int offset;
 	
 	private int limit;
@@ -231,6 +233,14 @@ public class PayRecord {
 
 	public void setOrder(String order) {
 		this.order = order;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 	
 	

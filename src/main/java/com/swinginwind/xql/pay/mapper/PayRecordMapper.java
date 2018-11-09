@@ -13,9 +13,6 @@ import com.swinginwind.xql.pay.entity.PayRecord;
 @Mapper
 public interface PayRecordMapper {
 	
-	@Insert("INSERT INTO pay_record(product_id,product_name,pay_way,trade_no,out_trade_no,user_id,user_name,buyer_id,buyer_name,seller_id,seller_name,total_amount,receipt_amount,buyer_pay_amount,pay_status,pay_time,record_time) VALUES(#{productId}, #{productName}, #{payWay}, #{tradeNo}, #{outTradeNo}, #{userId}, #{userName}, #{buyerId}, #{buyerName}, #{sellerId}, #{sellerName}, #{totalAmount}, #{receiptAmount}, #{buyerPayAmount}, #{payStatus}, #{payTime}, #{recordTime})")
-    void insert(PayRecord payRecord);
-	
 	@Select("SELECT * FROM pay_record order by ${sort} ${order},pay_time desc, id desc limit #{offset}, #{limit}")
     @Results({
         @Result(property = "id",  column = "id"),
@@ -43,5 +40,19 @@ public interface PayRecordMapper {
 	
 	@Select("SELECT count(1) FROM pay_record where out_trade_no=#{outTradeNo}")
 	int getCountByOutTradeNo(String outTradeNo);
+	
+	int deleteByPrimaryKey(Integer id);
+
+    int insert(PayRecord record);
+
+    int insertSelective(PayRecord record);
+
+    PayRecord selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(PayRecord record);
+
+    int updateByPrimaryKey(PayRecord record);
+
+	List<PayRecord> selectByUser(PayRecord payRecord);
 
 }

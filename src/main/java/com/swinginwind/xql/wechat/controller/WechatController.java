@@ -68,10 +68,10 @@ public class WechatController {
      * @throws UnsupportedEncodingException 
      */
     @GetMapping("/authorizeWap")
-    public String authorizeWap(HttpServletRequest request) throws UnsupportedEncodingException {
+    public String authorizeWap(HttpServletRequest request, String redirect) throws UnsupportedEncodingException {
     //设置回调地址
         String url = wxPayBean.getDomain().concat("/wechat/userInfoMp");
-        String redirectUrl = wxMpService.oauth2buildAuthorizationUrl(url, WxConsts.OAUTH2_SCOPE_USER_INFO, "STATE");
+        String redirectUrl = wxMpService.oauth2buildAuthorizationUrl(url, WxConsts.OAUTH2_SCOPE_USER_INFO, redirect);
         return "redirect:" + redirectUrl;
     }
     
@@ -82,10 +82,10 @@ public class WechatController {
      * @throws UnsupportedEncodingException 
      */
     @GetMapping("/authorizePc")
-    public String authorizePc(HttpServletRequest request) throws UnsupportedEncodingException {
+    public String authorizePc(HttpServletRequest request, String redirect) throws UnsupportedEncodingException {
     //设置回调地址
         String url = wxPayBean.getDomain().concat("/wechat/userInfoWeb");
-        String redirectUrl = wxWebService.buildQrConnectUrl(url, WxConsts.QRCONNECT_SCOPE_SNSAPI_LOGIN, "STATE");
+        String redirectUrl = wxWebService.buildQrConnectUrl(url, WxConsts.QRCONNECT_SCOPE_SNSAPI_LOGIN, redirect);
         return "redirect:" + redirectUrl;
     }
     
@@ -109,7 +109,7 @@ public class WechatController {
         	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
         	System.out.println("MP微信用户信息获取成功,code:" + code + ";token:" + wxMpOAuth2AccessToken );
-        	return "redirect:" + appConfig.getXqlUrl() + "/home.php?token=" + member.getLoginToken();
+        	return "redirect:" + returnUrl + "?token=" + member.getLoginToken();
         }
         else {
         	System.out.println("MP微信用户信息获取失败,code:" + code + ";token:" + wxMpOAuth2AccessToken );
@@ -135,7 +135,7 @@ public class WechatController {
         	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
         	System.out.println("WEB微信用户信息获取成功,code:" + code + ";token:" + wxMpOAuth2AccessToken );
-        	return "redirect:" + appConfig.getXqlUrl() + "/home.php?token=" + member.getLoginToken();
+        	return "redirect:" + returnUrl + "?token=" + member.getLoginToken();
         }
         else {
         	System.out.println("WEB微信用户信息获取失败,code:" + code + ";token:" + wxMpOAuth2AccessToken );

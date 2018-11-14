@@ -46,6 +46,7 @@
 			<form class="form-horizontal">
 				<input type="hidden" name="userid" />
 				<div style="max-width: 800px; margin: auto; padding: 20px;">
+					<h4 id="registerInfoTitle" style="display: none;">请完善您的会员资料<hr></h4>
 					<div class="form-group">
 						<div class="col-sm-2 control-label" style="text-align: left;width: 20%;padding: 0px 0px 0px 10px;display: inline-block;float: left;">
 							<img class="img-thumbnail" id="userInfo_headImg" width="80"
@@ -195,7 +196,15 @@
 		$.post('/userPage/saveCurrentUser', userInfo, function(res) {
 			$.hideLoading();
 			if(res.status == 'success') {
-				layer.alert('保存成功');
+				var redirect = getQueryString('redirect');
+				if(!redirect)
+					layer.alert('保存成功');
+				else if(res.member.userstatus == 'N')
+					layer.alert('请完整填写您的会员资料');
+				else 
+					layer.alert('保存成功', function() {
+						top.postMessage({ type: 'redirect', url: redirect}, '*');
+					});
 			}
 			else {
 				layer.alert('保存失败');
@@ -214,6 +223,18 @@
 			return false;
 		}
 	}
+	
+	function getQueryString(name) { 
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+		var r = window.location.search.substr(1).match(reg); 
+		if (r != null) return unescape(r[2]); return null; 
+	} 
+	
+	var redirect = getQueryString('redirect');
+	if(redirect) {
+		$('#registerInfoTitle').show();
+	}
+	
 		
 </script>
 </html>

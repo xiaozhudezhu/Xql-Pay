@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.swinginwind.xql.pay.entity.ExTempData;
 import com.swinginwind.xql.pay.entity.LoginRecord;
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
 			member.setPassword("");
 			member.setPhonenum("");
 			member.setTokencode(UUID.randomUUID().toString().replaceAll("-", ""));
-			member.setUserstatus("Y");
+			member.setUserstatus("N");
 			member.setLevel("");
 			member.setYearsplay("");
 			member.setAge("");
@@ -74,6 +75,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public int saveUserInfo(TMembers member) {
+		if(!StringUtils.isEmpty(member.getAchivinglevel()) && !StringUtils.isEmpty(member.getCity()) && !StringUtils.isEmpty(member.getGender()) && !StringUtils.isEmpty(member.getHourspractice()) && !StringUtils.isEmpty(member.getId()) && !StringUtils.isEmpty(member.getLevel()) && !StringUtils.isEmpty(member.getYearsplay()))
+			member.setUserstatus("Y");
+		else
+			member.setUserstatus("N");
 		return tMembersMapper.updateByPrimaryKeySelective(member);
 	}
 	

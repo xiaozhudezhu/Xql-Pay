@@ -48,6 +48,7 @@ public class UserPageController {
         	member.setPassword(null);
     		userService.saveUserInfo(member);
     		result.put("status", "success");
+    		result.put("member", member);
         }
 		return result;
 	}

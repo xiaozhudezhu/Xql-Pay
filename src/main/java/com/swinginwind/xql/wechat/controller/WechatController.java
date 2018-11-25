@@ -1,6 +1,7 @@
 package com.swinginwind.xql.wechat.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import javax.annotation.Resource;
@@ -109,8 +110,10 @@ public class WechatController {
         	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
         	System.out.println("MP微信用户信息获取成功,code:" + code + ";token:" + wxMpOAuth2AccessToken );
-        	return "redirect:" + returnUrl + "?token=" + member.getLoginToken();
-        }
+        	String and = "?";
+        	if(returnUrl.contains("?"))
+        		and = "&";
+        	return "redirect:" + returnUrl + and + "token=" + member.getLoginToken();        }
         else {
         	System.out.println("MP微信用户信息获取失败,code:" + code + ";token:" + wxMpOAuth2AccessToken );
         }
@@ -135,7 +138,10 @@ public class WechatController {
         	request.getSession().setAttribute("userInfo", member);
         	request.getSession().setAttribute("openId", user.getOpenId());
         	System.out.println("WEB微信用户信息获取成功,code:" + code + ";token:" + wxMpOAuth2AccessToken );
-        	return "redirect:" + returnUrl + "?token=" + member.getLoginToken();
+        	String and = "?";
+        	if(returnUrl.contains("?"))
+        		and = "&";
+        	return "redirect:" + returnUrl + and + "token=" + member.getLoginToken();
         }
         else {
         	System.out.println("WEB微信用户信息获取失败,code:" + code + ";token:" + wxMpOAuth2AccessToken );

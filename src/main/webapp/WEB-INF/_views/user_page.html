@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 <meta charset="utf-8">
 <meta
@@ -20,8 +20,10 @@
 <link
 	href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css"
 	rel="stylesheet">
-<link rel="stylesheet" href="http://cdn.bootcss.com/weui/1.1.1/style/weui.min.css">
-<link rel="stylesheet" href="http://cdn.bootcss.com/jquery-weui/1.0.1/css/jquery-weui.min.css">
+<link rel="stylesheet"
+	href="http://cdn.bootcss.com/weui/1.1.1/style/weui.min.css">
+<link rel="stylesheet"
+	href="http://cdn.bootcss.com/jquery-weui/1.0.1/css/jquery-weui.min.css">
 <style>
 .city-picker-dropdown {
 	left: 15px !important;
@@ -31,11 +33,13 @@
 <title>个人主页</title>
 </head>
 <body ontouchstart class="">
-	<ul class="nav nav-tabs" id="tabs" role="tablist" style="z-index: 100;background: white;width: 100%;position: fixed;">
+	<ul class="nav nav-tabs" id="tabs" role="tablist"
+		style="z-index: 100; background: white; width: 100%; position: fixed;">
 		<li role="presentation" class="active"><a href="#userInfo"
 			aria-controls="userInfo" role="tab" data-toggle="tab">个人信息</a></li>
 		<li role="presentation"><a href="#paySelect"
-			aria-controls="paySelect" role="tab" data-toggle="tab" onclick="return paySelect();">购买产品</a></li>
+			aria-controls="paySelect" role="tab" data-toggle="tab"
+			onclick="return paySelect();">购买产品</a></li>
 		<li role="presentation"><a href="#payRecord"
 			aria-controls="payRecord" role="tab" data-toggle="tab">付款记录</a></li>
 		<!-- <li role="presentation"><a href="#myClass"
@@ -46,36 +50,54 @@
 			<form class="form-horizontal">
 				<input type="hidden" name="userid" />
 				<div style="max-width: 800px; margin: auto; padding: 20px;">
-					<h4 id="registerInfoTitle" style="display: none;">请完善您的会员资料<hr></h4>
+					<h4 id="registerInfoTitle" style="display: none;">
+						请完善您的会员资料
+						<hr>
+					</h4>
 					<div class="form-group">
-						<div class="col-sm-2 control-label" style="text-align: left;width: 20%;padding: 0px 0px 0px 10px;display: inline-block;float: left;">
+						<div class="col-sm-2 control-label"
+							style="text-align: left; width: 20%; padding: 0px 0px 0px 10px; display: inline-block; float: left;">
 							<img class="img-thumbnail" id="userInfo_headImg" width="80"
 								height="80"></img>
 						</div>
-						<div class="col-sm-8" style="display: inline-block;width:50%;float: left;">
+						<div class="col-sm-8"
+							style="display: inline-block; width: 50%; float: left;">
 							<input class="form-control"
-								style="margin-top: 20px; font-size: 20px; border: 0; box-shadow: none;" id="userInfo_name" name="name" />
+								style="margin-top: 20px; font-size: 20px; border: 0; box-shadow: none;"
+								id="userInfo_name" name="name" />
 						</div>
-						<div class="col-sm-2" style="display: inline-block;width:30%;">
-							<button class="pull-right btn btn-success" style="margin-top: 20px;vertical-align:unset;" onclick="saveCurrentUser();return false;">保存</button>
+						<div class="col-sm-2" style="display: inline-block; width: 30%;">
+							<button style="display: none;" class="pull-right btn btn-success"
+								style="margin-top: 20px;vertical-align:unset;"
+								onclick="saveCurrentUser();return false;">保存</button>
 						</div>
-						
+
 					</div>
 					<hr />
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">邮件地址</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">邮件地址（可选）</p>
 						<div class="col-sm-10">
-							<input type="email" class="form-control" id="userInfo_id" name="id"></input>
+							<input type="email" class="form-control" id="userInfo_id"
+								name="id" placeholder="可选输入"></input>
 						</div>
 					</div>
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">球龄</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">球龄&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
-							<input type="number" class="form-control" id="userInfo_yearsplay" name="yearsplay"></input>
+							<select required class="form-control" name="yearsplay"
+								id="userInfo_yearsplay">
+								<option value="">请选择</option>
+								<option value="1">1年以下</option>
+								<option value="2">1-2年</option>
+								<option value="3">2-5年</option>
+								<option value="4">5-10年</option>
+								<option value="5">10-20年</option>
+								<option value="6">20年以上</option>
+							</select>
 						</div>
 					</div>
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">性别</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">性别&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
 							<div class="switch" style="height: 34px;" data-on="success"
 								data-off="warning" data-on-label="男" data-off-label="女">
@@ -84,9 +106,10 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">年龄层</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">年龄层&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
-							<select class="form-control" name="age" id="userInfo_age">
+							<select required class="form-control" name="age"
+								id="userInfo_age">
 								<option value="">请选择</option>
 								<option value="1">20-29</option>
 								<option value="2">30-39</option>
@@ -98,9 +121,10 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">目前等级自测</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">目前等级自测&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
-							<select class="form-control" name="level" id="userInfo_level">
+							<select required class="form-control" name="level"
+								id="userInfo_level">
 								<option value="">请选择</option>
 								<option value="1">初级（2.5以下）</option>
 								<option value="2">中级（2.5-4.0）</option>
@@ -109,9 +133,10 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">每月练球时长</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">每月练球时长（小时）&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
-							<select class="form-control" name="hourspractice" id="userInfo_hourspractice">
+							<select required class="form-control" name="hourspractice"
+								id="userInfo_hourspractice">
 								<option value="">请选择</option>
 								<option value="1">2</option>
 								<option value="2">4</option>
@@ -125,21 +150,34 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">期望达到水平</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">期望达到水平&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
-							<select class="form-control" name="achivinglevel" id="userInfo_achivinglevel">
+							<select required class="form-control" name="achivinglevel"
+								id="userInfo_achivinglevel">
 								<option value="">请选择</option>
-         						<option value="2">中级</option>
-         						<option value="3">高级</option>
-         						<option value="4">高级5.0以上</option>
+								<option value="2">中级</option>
+								<option value="3">高级</option>
+								<option value="4">高级5.0以上</option>
 							</select>
 						</div>
 					</div>
 					<div class="form-group">
-						<p class="col-sm-2 control-label" style="text-align: left;">地区</p>
+						<p class="col-sm-2 control-label" style="text-align: left;">地区&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
-							<input class="form-control" readonly id="userInfo_city" name="city"></input>
+							<input required class="form-control" readonly id="userInfo_city"
+								name="city"></input>
 						</div>
+					</div>
+					<div class="form-group" style="text-align: center;">
+						<div id="agreementDiv">
+							<label style="font-weight: normal;"><input
+								type="checkbox" id="agreeCheckBox"
+								style="margin-top: -2px; vertical-align: middle;" />我已仔细阅读并同意</label><a
+								href="javascript:showAgreement()">《学球乐登录协议》</a>
+						</div>
+						<button disabled class="btn btn-success" id="saveBtn"
+							style="margin-top: 20px; vertical-align: unset; width: 200px;"
+							onclick="saveCurrentUser();return false;">提交会员资料</button>
 					</div>
 				</div>
 			</form>
@@ -158,7 +196,7 @@
 </body>
 <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 <script
-		src="http://cdn.bootcss.com/jquery-weui/1.0.1/js/jquery-weui.min.js"></script>
+	src="http://cdn.bootcss.com/jquery-weui/1.0.1/js/jquery-weui.min.js"></script>
 <script
 	src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
@@ -179,13 +217,14 @@
 		$('#userInfo :input').each(function(i, input) {
 			$(input).val(userInfo[$(input).attr('name')]);
 		});
-		$('#userInfo_gender').attr('checked', userInfo.gender == 'm' ? true : false);
+		$('#userInfo_gender').attr('checked',
+				userInfo.gender == 'm' ? true : false);
 		$('#userInfo_gender').change();
 		//$('#userInfo_gender').bootstrapSwitch('setState', true);
 		$('#userInfo_city').val(userInfo.city).citypicker();
 
 	});
-	
+
 	function saveCurrentUser() {
 		var userInfo = {};
 		$('#userInfo :input').each(function(i, input) {
@@ -195,46 +234,86 @@
 		$.showLoading("正在提交...");
 		$.post('/userPage/saveCurrentUser', userInfo, function(res) {
 			$.hideLoading();
-			if(res.status == 'success') {
+			if (res.status == 'success') {
 				var redirect = getQueryString('redirect');
-				if(!redirect)
-					layer.alert('保存成功');
-				else if(res.member.userstatus == 'N')
-					layer.alert('请完整填写您的会员资料');
-				else 
-					layer.alert('保存成功', function() {
-						top.postMessage({ type: 'redirect', url: redirect}, '*');
+				if (!redirect) {
+					if (res.member.userstatus == 'N')
+						layer.alert('请完整填写您的会员资料', { offset: '150px' });
+					else
+						layer.alert('保存成功，现可去主页观看测试付费课程。', { offset: '150px' }, function() {
+							top.postMessage({
+								type : 'redirect',
+								url : '/'
+							}, '*');
+						});
+				} else if (res.member.userstatus == 'N')
+					layer.alert('请完整填写您的会员资料', { offset: '150px' });
+				else
+					layer.alert('保存成功，现可去主页观看测试付费课程。', { offset: '150px' }, function() {
+						top.postMessage({
+							type : 'redirect',
+							url : decodeURIComponent(redirect)
+						}, '*');
 					});
-			}
-			else {
-				layer.alert('保存失败');
+			} else {
+				layer.alert('保存失败', { offset: '150px' });
 			}
 		});
 	}
-	
-	if(location.hash) {
+
+	if (location.hash) {
 		$('#tabs a[href="' + location.hash + '"]').tab('show')
 	}
-	
+
 	function paySelect() {
 		var ua = window.navigator.userAgent.toLowerCase();
 		if (ua.match(/MicroMessenger/i) == 'micromessenger') {
-			top.postMessage({ type: 'redirect', url: 'http://pay.xueqiule.com/paySelect'}, '*');
+			top.postMessage({
+				type : 'redirect',
+				url : 'http://pay.xueqiule.com/paySelect'
+			}, '*');
 			return false;
 		}
 	}
-	
-	function getQueryString(name) { 
-		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
-		var r = window.location.search.substr(1).match(reg); 
-		if (r != null) return unescape(r[2]); return null; 
-	} 
-	
-	var redirect = getQueryString('redirect');
-	if(redirect) {
-		$('#registerInfoTitle').show();
+
+	function getQueryString(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null)
+			return unescape(r[2]);
+		return null;
 	}
-	
-		
+
+	var redirect = getQueryString('redirect');
+	if (redirect) {
+		$('#registerInfoTitle').show();
+		//$('#agreementDiv').show();
+	} else {
+		$('#agreeCheckBox').prop('checked', true).attr('disabled', 'disabled');
+	}
+
+	function showAgreement() {
+		top.postMessage({
+			type : 'showAgreement'
+		}, '*');
+	}
+
+	function checkUserInfo() {
+		var isValid = true;
+		$('#userInfo :input').each(function(i, input) {
+			if ($(input).attr('required') && !input.value) {
+				isValid = false;
+			}
+		});
+		isValid = isValid && $('#agreeCheckBox').prop('checked');
+		if (isValid) {
+			$('#saveBtn').removeAttr('disabled').html('提交会员资料');
+		} else {
+			$('#saveBtn').attr('disabled', 'disabled').html('请填写完整的会员资料');
+		}
+
+	}
+	checkUserInfo();
+	$('#userInfo :input').change(checkUserInfo);
 </script>
 </html>

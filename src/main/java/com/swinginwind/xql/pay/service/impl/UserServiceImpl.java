@@ -20,23 +20,24 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
 @Service
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
-    private TMembersMapper tMembersMapper;
-	
-    @Autowired
-    private LoginRecordMapper loginRecordMapper;
-    
-    @Autowired
-    private ExTempDataMapper exTempDataMapper;
+	private TMembersMapper tMembersMapper;
+
+	@Autowired
+	private LoginRecordMapper loginRecordMapper;
+
+	@Autowired
+	private ExTempDataMapper exTempDataMapper;
 
 	@Override
 	public TMembers wechatLogin(WxMpUser wxUser) {
-		TMembers member = tMembersMapper.selectByWechatId(wxUser.getOpenId());
-		if(member == null) {
+		System.out.println("###Get UnionId: " + wxUser.getUnionId());
+		TMembers member = tMembersMapper.selectByWechatId(wxUser.getUnionId());
+		if (member == null) {
 			member = new TMembers();
 			member.setName(wxUser.getNickname());
-			member.setWechatid(wxUser.getOpenId());
+			member.setWechatid(wxUser.getUnionId());
 			member.setCountry(wxUser.getCountry());
 			member.setProvince(wxUser.getProvince());
 			member.setCity(wxUser.getProvince() + "/" + wxUser.getCity());
@@ -57,30 +58,32 @@ public class UserServiceImpl implements UserService {
 			tMembersMapper.insert(member);
 		}
 		LoginRecord record = new LoginRecord(wxUser);
-        loginRecordMapper.insert(record);
-        ExTempData tempData = new ExTempData();
-        tempData.setToken(UUID.randomUUID().toString().replaceAll("-", ""));
-        tempData.setData(JSON.toJSONString(member));
-        tempData.setType("login");
-        tempData.setCreateTime(new Date());
-        member.setLoginToken(tempData.getToken());
-        exTempDataMapper.insert(tempData);
+		loginRecordMapper.insert(record);
+		ExTempData tempData = new ExTempData();
+		tempData.setToken(UUID.randomUUID().toString().replaceAll("-", ""));
+		tempData.setData(JSON.toJSONString(member));
+		tempData.setType("login");
+		tempData.setCreateTime(new Date());
+		member.setLoginToken(tempData.getToken());
+		exTempDataMapper.insert(tempData);
 		return member;
 	}
-	
+
 	@Override
 	public TMembers selectByUserId(int userId) {
 		return tMembersMapper.selectByPrimaryKey(userId);
 	}
-	
+
 	@Override
 	public int saveUserInfo(TMembers member) {
-		if(!StringUtils.isEmpty(member.getAchivinglevel()) && !StringUtils.isEmpty(member.getCity()) && !StringUtils.isEmpty(member.getGender()) && !StringUtils.isEmpty(member.getHourspractice()) && !StringUtils.isEmpty(member.getId()) && !StringUtils.isEmpty(member.getLevel()) && !StringUtils.isEmpty(member.getYearsplay()))
+		if (!StringUtils.isEmpty(member.getAchivinglevel()) && !StringUtils.isEmpty(member.getCity())
+				&& !StringUtils.isEmpty(member.getGender()) && !StringUtils.isEmpty(member.getHourspractice())
+				&& /*!StringUtils.isEmpty(member.getId()) &&*/ !StringUtils.isEmpty(member.getLevel())
+				&& !StringUtils.isEmpty(member.getYearsplay()))
 			member.setUserstatus("Y");
 		else
 			member.setUserstatus("N");
 		return tMembersMapper.updateByPrimaryKeySelective(member);
 	}
-	
 
 }

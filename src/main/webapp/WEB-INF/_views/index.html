@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -7,70 +7,20 @@
 <meta content="black" name="apple-mobile-web-app-status-bar-style">
 <meta content="telephone=no" name="format-detection">
 <meta content="email=no" name="format-detection">
-<link rel="stylesheet" href="https://act.weixin.qq.com/static/cdn/css/wepayui/0.1.1/wepayui.min.css">
-<link rel="stylesheet" href="static/css/pay.css">
-<title>学球乐支付功能演示</title>
-</head>
-<!-- 
-	通用说明： 
-	1.模块的隐藏添加class:hide;
-	2.body标签默认绑定ontouchstart事件，激活所有按钮的:active效果
--->
-<body ontouchstart>
-<div class="weui-wepay-pay-select">
-    <div class="weui-wepay-pay-select__hd">
-        <h1 class="weui-wepay-pay-select__title" style="font-size: 25px">学球乐支付功能演示</h1>
-        <p class="weui-wepay-pay-select__info" style="font-size: 18px">包含微信授权登录、支付、付款记录查询、退款记录查询等功能<a href="static/readme.htm">【点击查看测试说明】</a></p>
-        <!-- <p class="weui-wepay-pay-select__info" style="font-size: 18px">* 目前仅支持支付宝沙盒测试账号</p>
-        <p class="weui-wepay-pay-select__info" style="font-size: 18px">* 支付宝测试买家账号：drkudo7520@sandbox.com，密码：111111</p> -->
-    </div>
-    <br>
-    <hr>
-    <div class="weui-wepay-pay-select__ft">
-    	<div class="weui-wepay-pay__btn">
-            <a href="javascript:void(0)" id="wxLogin" onclick="wxLogin()" class="weui-btn weui-btn_primary">微信授权登录</a>
-            <a id="wxLoginInfo" href="wechat/logout" class="weui-btn weui-btn_default" style="display:none"></a>
-        </div>
-        <div class="weui-wepay-pay__btn" disabled>
-            <a href="paySelect" target="_blank" class="weui-btn weui-btn_primary">支付</a>
-        </div>
-        <div class="weui-wepay-pay__btn" disabled>
-            <a href="payRecord" target="_blank" class="weui-btn weui-btn_primary">付款记录</a>
-        </div>
-        <div class="weui-wepay-pay__btn" disabled>
-            <a href="refundRecord" target="_blank" class="weui-btn weui-btn_primary">退款记录</a>
-        </div>
-    </div>
-</div>
-<div class="weui-wepay-logos weui-wepay-logos_ft">
-    <img src="https://act.weixin.qq.com/static/cdn/img/wepayui/0.1.1/wepay_logo_default_gray.svg" alt="" height="16">
-</div>
-<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+
 
 <script>
-$.get('wechat/getCurrentWxUser', {}, function(data) {
-	if(data && data.nickname) {
-		$('#wxLogin').hide();
-		$('#wxLoginInfo').show();
-		$('#wxLoginInfo').html('用户[' + data.nickname + ']已登录 <a href="javascript:void(0)" style="display: none">注销</a>');
-		$('.weui-wepay-pay__btn:gt(0)').removeAttr('disabled');
-		parent.postMessage(data, '*');
-	}
-	else {
-		var ua = window.navigator.userAgent.toLowerCase();
-		if (ua.match(/MicroMessenger/i) == 'micromessenger') {
-			wxLogin();
-		} else {
-			return false;
-		}
-		//if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent))
-	}
-});
 
 function wxLogin() {
 	var authorizePath = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent) ? 'authorizeWap' : 'authorizePc';
 	window.location.href = 'wechat/' + authorizePath;
 }
+
+if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+			wxLogin();
+		} else {
+			return false;
+		}
 
 
 </script>

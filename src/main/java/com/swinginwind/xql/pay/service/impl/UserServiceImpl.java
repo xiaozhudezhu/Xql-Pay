@@ -15,6 +15,7 @@ import com.swinginwind.xql.pay.mapper.ExTempDataMapper;
 import com.swinginwind.xql.pay.mapper.LoginRecordMapper;
 import com.swinginwind.xql.pay.mapper.TMembersMapper;
 import com.swinginwind.xql.pay.service.UserService;
+import com.swinginwind.xql.wechat.utils.EmojiFilter;
 
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
@@ -32,6 +33,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public TMembers wechatLogin(WxMpUser wxUser) {
+		System.out.println(wxUser.getNickname());
+		//解决表情符号的问题
+		if(!StringUtils.isEmpty(wxUser.getNickname()))
+			wxUser.setNickname(EmojiFilter.filterEmoji(wxUser.getNickname()));
 		System.out.println("###Get UnionId: " + wxUser.getUnionId());
 		TMembers member = tMembersMapper.selectByWechatId(wxUser.getUnionId());
 		if (member == null) {
@@ -76,6 +81,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public int saveUserInfo(TMembers member) {
+		if(!StringUtils.isEmpty(member.getName()))
+			member.setName(EmojiFilter.filterEmoji(member.getName()));
 		if (!StringUtils.isEmpty(member.getAchivinglevel()) && !StringUtils.isEmpty(member.getCity())
 				&& !StringUtils.isEmpty(member.getGender()) && !StringUtils.isEmpty(member.getHourspractice())
 				&& /*!StringUtils.isEmpty(member.getId()) &&*/ !StringUtils.isEmpty(member.getLevel())

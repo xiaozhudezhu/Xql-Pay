@@ -369,7 +369,7 @@
         },
 
         feedVal: function () {
-            this.$element.val(this.getVal());
+            this.$element.val(this.getVal()).trigger('data-change');
         },
 
         output: function (type) {

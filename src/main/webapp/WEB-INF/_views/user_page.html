@@ -181,7 +181,7 @@
 					</div>
 				</div>
 			</form>
-
+			<br><br>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="myClass">...</div>
 		<div role="tabpanel" class="tab-pane" id="payRecord">
@@ -315,5 +315,6 @@
 	}
 	checkUserInfo();
 	$('#userInfo :input').change(checkUserInfo);
+	$('#userInfo_city').bind('data-change', checkUserInfo);
 </script>
 </html>

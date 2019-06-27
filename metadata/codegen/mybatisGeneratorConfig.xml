@@ -52,7 +52,7 @@
 		</javaClientGenerator>
 	
 	
-		<table tableName="pay_record" domainObjectName="PayRecord"
+		<table tableName="video_permission" domainObjectName="VideoPermission"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false" schema="wdn">

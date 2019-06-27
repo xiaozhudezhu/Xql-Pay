@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>#(video.name)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/weui/1.1.1/style/weui.min.css">
+    <link rel="stylesheet" href="/static/css/weuix.css"/>
+    <script src="http://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+
+    
+    
+    <!-- 引入播放器 css 文件 -->
+  <link href="https://imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.css" rel="stylesheet">
+  <!-- 如需在IE8、9浏览器中初始化播放器，浏览器需支持Flash并在页面中引入 -->
+  <!--[if lt IE 9]>
+  <script src="//imgcache.qq.com/open/qcloud/video/tcplayer/ie8/videojs-ie8.js"></script>
+  <![endif]-->
+  <!-- 如果需要在 Chrome Firefox 等现代浏览器中通过H5播放hls，需要引入 hls.js -->
+  <script src="https://imgcache.qq.com/open/qcloud/video/tcplayer/lib/hls.min.0.8.8.js"></script>
+  <!-- 引入播放器 js 文件 -->
+  <script src="https://imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.min.js"></script>
+    <script src="/static/layer/layer.js"></script>
+    
+
+    <script>
+        $(function() {
+        	window.player = TCPlayer('player-container-id', { // player-container-id 为播放器容器ID，必须与html中一致
+			    fileID: '#(video.fileId)', // 请传入需要播放的视频filID 必须
+			    appID: '1252392416', // 请传入点播账号的appID 必须
+			    definition: '30',			    //其他参数请在开发文档中查看
+			    autoplay: true
+			});
+        });
+        
+        function screenshot() {
+        	var canvas = document.getElementById('screenshotCanvas');
+            var ctx = canvas.getContext('2d');
+            var width = 500;
+            var height = 500;
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage($('#player-container-id video')[0], 0, 0, width, height);  // 将video中的数据绘制到canvas里
+        	console.log(canvas.toDataURL('image/png'));
+        }
+
+    </script>
+
+</head>
+
+<body ontouchstart>
+<div class="container" style="text-align:center;">
+	<h2>#(video.name)</h2>
+	<button onclick="screenshot()">截图</button>
+	<video style="margin: 0 auto; width: 100%;" id="player-container-id" preload="auto" playsinline webkit-playsinline crossorigin="anonymous">
+	</video>
+	<canvas id="screenshotCanvas"></canvas>
+<div>
+
+</div>
+</body>
+</html>

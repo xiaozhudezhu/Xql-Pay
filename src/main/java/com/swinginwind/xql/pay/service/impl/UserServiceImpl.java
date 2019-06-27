@@ -1,6 +1,7 @@
 package com.swinginwind.xql.pay.service.impl;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,11 @@ public class UserServiceImpl implements UserService {
 		else
 			member.setUserstatus("N");
 		return tMembersMapper.updateByPrimaryKeySelective(member);
+	}
+
+	@Override
+	public List<TMembers> select(TMembers param) {
+		return tMembersMapper.select(param);
 	}
 
 }

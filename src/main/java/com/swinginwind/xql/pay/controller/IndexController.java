@@ -126,6 +126,7 @@ public class IndexController {
 	public String success() {
 		return "success.html";
 	}
+   
     
     
     @RequestMapping(value = "/ss/{id}",method = RequestMethod.GET)

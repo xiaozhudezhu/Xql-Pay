@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/weui/1.1.1/style/weui.min.css">
+    <link rel="stylesheet" href="/static/css/weuix.css"/>
+
+    <script src="/static/js/zepto.min.js"></script>
+    <script src="/static/js/zepto.weui.js"></script>
+
+    <script src="/static/js/iscroll-lite.js"></script>
+    
+    <style>
+    .weui-navbar__item {
+    	cursor: pointer;
+    }
+    .weui-mark-img {
+	    border-radius: 4px;
+	    padding-top: 0px;
+	}
+	.weui-mark-img img {
+	    border-radius: 4px;
+	    height: auto;
+	    position: relative;
+	}
+    .weui-mark-img svg {
+   		opacity: 0.4;
+    	position: absolute;
+    	top: 40%;
+    	left: 40%;
+    }
+    .weui-mark-rt {
+    	right: 1em;
+    }
+    .weui-mark li {
+	    padding-right: 1em;
+	    padding-left: 1em;
+	    padding-bottom: 2em;
+	    float: left;
+	    position: relative;
+	    -webkit-box-sizing: border-box;
+	    width: 25%;
+	    list-style: outside none none;
+    }
+    .weui-mark-title a {
+    	font-weight: 650;
+    	color: #444;
+    	font-size: 1.1em;
+	}
+	    
+    .container {
+    	bottom: auto;
+    	position: fixed;
+    	background: white;
+	}	
+    
+    @media (max-width:1119.8px) {
+    .common-container{}
+    .weui-mark li {
+    	width: 50%;
+	    padding-right: 0.625em;
+	    padding-left: 0em;
+	    padding-bottom: 0.625em;
+    }
+    .weui-mark-rt {
+    	right: 0.625em;
+    }
+    }
+    
+    @media (min-width:1119.8px) and (max-width:1790.2px){
+    .common-container{margin:0 100px}
+    }
+    @media (min-width:1790.2px){
+    .common-container{margin:0 auto;max-width:1679px}
+    }
+    
+    </style>
+
+    <script>
+        $(function() {
+        	$.get('/video/getVideoTypeByPid', { pid: 0 }, function(list1) {
+        		var $l1 = $('#tabVideoType1 .weui-navbar');
+        		$l1.html('');
+        		$.each(list1, function(i, item1) {
+        			$l1.append('<div typeid="' + item1.id + '" class="weui-navbar__item">' + item1.name + '</div>')
+        		});
+        		$('#tabVideoType1').tab({
+                    defaultIndex: 0,
+                    activeClass: 'tab-blue',
+                    onToggle: function (index) {
+                    	clearVideoFile();
+    					var pid = $l1.children().eq(index).attr('typeid');
+    					$.get('/video/getVideoTypeByPid', { pid: pid }, function(list2) {
+    		        		var $l2 = $('#tabVideoType2 .weui-navigator-list');
+    		        		$l2.html('');
+    		        		$.each(list2, function(i, item2) {
+    		        			$l2.append('<li><a href="javascript:loadVideoFile(' + item2.id + ')">' + item2.name + '</a></li>')
+    		        		});
+    		        		if(list2.length > 0) {
+    		        			TagNav('#tabVideoType2', {
+            		                type: 'scrollToFirst',
+            		                curClassName: 'weui-state-active',
+            		                index: 0
+            		            });
+    		        			loadVideoFile(list2[0].id);
+    		        		}
+    					});
+                    }
+                });
+        	});
+        });
+        
+        function loadVideoFile(pid) {
+        	var $l1 = $('#listVideoFile');
+    		$l1.html('');
+        	$.get('/video/getVideoFileByPid', { pid: pid }, function(list) {
+        		$.each(list, function(i, item) {
+        			var $li = $('#videoFileTemplate').clone();
+        			$li.attr('videoId', item.id);
+        			//$li.find('img').attr('src', '/static/images/play.png');
+        			$li.find('.weui-mark-title a').html(item.name);
+        			$li.find('.weui-mark-desc').html(item.remark);
+        			$li.attr('permitted', item.permitted);
+        			if(item.permitted == '2')
+        				$li.find('.weui-mark-rt').addClass('bg-green').text('免费');
+        			else if(item.permitted == '1')
+        				$li.find('.weui-mark-rt').addClass('bg-green').text('已购');
+        			else if(item.permitted == '0')
+        				$li.find('.weui-mark-rt').addClass('bg-red').text('未购');
+        			$li.click(function(e) {
+        				//判断是用户触发，解决滑动时触发的bug
+        				if(e.isTrusted) {
+        					if($(this).attr('permitted') == '0') {
+        						$.toast('抱歉您没有权限查看该视频', 'forbidden')
+            					return;
+            				}
+        					if(window.top == window)
+        						window.open('/video/play/' + $(this).attr('videoid'));
+        					else
+        						top.postMessage({
+        							type : 'videoPlay',
+        							videoId : $(this).attr('videoid')
+        						}, '*');
+        				}
+        					
+        			});
+        			$li.show();
+        			$l1.append($li);
+        		});
+        	});
+        }
+        
+        function clearVideoFile() {
+        	var $l1 = $('#listVideoFile');
+    		$l1.html('');
+        }
+
+    </script>
+
+</head>
+
+<body ontouchstart>
+<div class="container">
+	<div class="weui-tab" id="tabVideoType1" style="height:44px;">
+        <div class="weui-navbar">
+        </div>
+    </div>
+	<br>
+    <div id="tabVideoType2" class="weui-navigator weui-navigator-wrapper">
+        <ul class="weui-navigator-list">
+        </ul>
+    </div>
+    
+</div>
+<div class="common-container" style="margin-top: 110px;">
+    <ul id="listVideoFile" class="weui-mark ">
+    </ul>
+</div>
+<li id="videoFileTemplate" style="display: none; cursor: pointer;">
+    <div class="weui-mark-img">
+    	<img src="http://1252392416.vod2.myqcloud.com/9337f5cavodtransgzp1252392416/d1071af17447398155811239555/snapshot/1524902894_729086962.100_0.jpg" />
+        <svg height="20%" viewBox="0 0 484 348">
+      		<path class="draw-fill" transform="translate(4 4)" d="M383,124C350-42,122.3-40.5,90.6,123.5c-110.4,18.5-131,185,.6,216.5H381.6C519.7,310.7,494.1,137.8,383,124Z"></path>
+      		<path transform="translate(4 4)" d="M200.4,110.2c-9.4-5.8-19.6,2.7-19.4,11.7V256.2c0,8,10.4,16.7,19.4,10.8,2.2-1.4,111.8-65.9,114-67.3,7.4-4,10.1-15.8,0-22.2Z" style="fill:#fff ;"></path>
+    	</svg>
+    </div>
+    <span class="weui-mark-rt">免费</span>
+    <div class="weui-mark-meta">
+        <div class="weui-mark-title"><a>斗罗大陆</a></div>
+        <div class="weui-mark-desc">斗罗大陆合集权限上线欢迎点播!!!</div>
+    </div>
+</li>
+</body>
+</html>

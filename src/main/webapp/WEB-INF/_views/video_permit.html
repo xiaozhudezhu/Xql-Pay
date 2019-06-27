@@ -1,0 +1,305 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta
+	content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+	name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<meta content="email=no" name="format-detection">
+<!-- 引入bootstrap样式 -->
+<link
+	href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- 引入bootstrap-table样式 -->
+<link
+	href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css"
+	rel="stylesheet">
+<link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+
+<link
+	href="/static/zTree/css/zTreeStyle/zTreeStyle.css"
+	rel="stylesheet">
+<title>视频授权</title>
+</head>
+<body ontouchstart class="">
+	<div class="row">
+  		<div class="col-md-6" style="padding: 0px 20px;">
+  			<h3>&nbsp;用户列表</h3>
+  			<div style="margin-left: 200px; margin-top: -35px;">
+  			<label>
+  				<input type="radio" onclick="changeConfigType(1)" name="opTypeRadio" checked="checked"/>单项配置
+  			</label>
+  			<label>
+  				<input type="radio" onclick="changeConfigType(2)" name="opTypeRadio"/>批量配置
+  			</label>
+  			</div>
+  			<table id="userTable" class="table table-no-bordered" data-toggle="table"
+				data-side-pagination="client" data-url="/video/userList"
+				data-height="400" data-pagination="true" data-striped="true"
+				data-sortable="true" data-sort-name="userid" data-sort-order="asc"
+				data-show-columns="true" data-show-refresh="true" data-search="false"
+				data-search-on-enter-key="true" data-unique-id="userid" data-search-text="搜索功能正在开发中"
+				data-smart-display="true" data-page-size="25" data-click-to-select="true"
+				data-single-select="true">
+				<thead>
+					<tr>
+						<th data-field="state" data-checkbox="true"></th>
+						<th data-field="name" data-align="center"
+							data-sortable="true" data-sort-name="name" data-formatter="formatUserName">姓名</th>
+						<th data-field="id" data-align="center" data-sortable="true"
+							data-sort-name="id">邮箱</th>
+						<th data-field="city" data-align="center" data-sortable="true"
+							data-sort-name="city">地区</th>
+						<th data-field="createtime" data-align="center" data-sortable="true"
+							data-sort-name="createtime">创建时间</th>
+						<th data-field="userstatus" data-align="center" data-sortable="true"
+							data-sort-name="userstatus" data-formatter="formatUserStatus">用户状态</th>
+						<th data-align="center" data-visible="false" data-formatter="operateFormatter">操作</th>
+					</tr>
+				</thead>
+			</table>
+  		</div>
+  		<div class="col-md-6" style="padding: 0px 20px;">
+  			<div>
+  				<h3>视频及有效期</h3>
+  				<button class="btn btn-primary" style="margin-left: 200px; margin-top: -40px;" 
+  					onclick="submitVideoPermission()">保存</button>
+  			</div>
+  			<div class="row">
+			    <div class='col-sm-6'>
+			        <div class="form-group">
+			            <label>有效期开始日期：</label>
+			            <!--指定 date标记-->
+			            <div class='input-group date' id='datetimepicker1'>
+			                <input type='text' class="form-control" />
+			                <span class="input-group-addon">
+			                    <span class="glyphicon glyphicon-calendar"></span>
+			                </span>
+			            </div>
+			        </div>
+			    </div>
+			    <div class='col-sm-6'>
+			        <div class="form-group">
+			            <label>有效期结束日期：</label>
+			            <!--指定 date标记-->
+			            <div class='input-group date' id='datetimepicker2'>
+			                <input type='text' class="form-control" />
+			                <span class="input-group-addon">
+			                    <span class="glyphicon glyphicon-calendar"></span>
+			                </span>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+			<label>视频：</label>
+  			<ul id="videoTree" class="ztree">
+  			</ul>
+  		</div>
+	</div>
+	
+</body>
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+
+<script
+	src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- bootstrap-table.min.js -->
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+<!-- 引入中文语言包 -->
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/zTree/jquery.ztree.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/static/layer/layer.js"></script>
+<script type="text/javascript">
+	
+	function formatUserStatus(value, record) {
+		return value == 'Y' ? '<div class="bg-success">已注册</div>' : '<div class="bg-danger">未注册</div>';
+	}
+	
+	function formatUserName(value, record) {
+		var img = record.headimgurl ? '<img class="img-rounded" width="30" src="' 
+				+ record.headimgurl + '" />&nbsp;' : '';
+		return img + value;
+	}	
+	
+	function initVideoTree() {
+		var setting = {
+	            view: {
+	                addHoverDom: false,
+	                removeHoverDom: false,
+	                selectedMulti: false
+	            },
+	            check: {
+	                enable: true
+	            },
+	            data: {
+	                simpleData: {
+	                    enable: true
+	                }
+	            },
+	            edit: {
+	                enable: false
+	            },
+	            callback: {
+	            	onClick: function(e, treeId, node) {
+	            		if(configType != 1)
+	                		return;
+	            		$('#datetimepicker1 input').val(node.startDate);
+	            		$('#datetimepicker2 input').val(node.dueDate);
+	            	}
+	            }
+	        };
+	        $.get('/video/videoTree', function(zNodes) {
+	        	$.each(zNodes, function(i, item) {
+	        		if(item.type == 'F')
+	        			item.icon = '/static/zTree/css/zTreeStyle/img/diy/13.png';
+	        		else
+	        			item.isParent = true;
+	        	});
+	 	       	var ztree = $.fn.zTree.init($("#videoTree"), setting, zNodes);
+	 	      	ztree.expandAll(true);
+	        });
+	}
+	
+	function recoverVideoTree() {
+		$('#datetimepicker1 input').val('');
+		$('#datetimepicker2 input').val('');
+		var ztree = $.fn.zTree.getZTreeObj('videoTree');
+		ztree.checkAllNodes(false);
+		ztree.cancelSelectedNode(ztree.getSelectedNodes()[0]);
+		var nodes = ztree.getNodesByFilter(function(node) {
+			return !!node.oname;
+		});
+		$.each(nodes, function(i, node) {
+			if(node.oname) {
+				delete node['startDate'];
+				delete node['startDate'];
+				node.name = node.oname;
+				delete node['oname'];
+				ztree.updateNode(node);
+			}
+		});
+	}
+	
+	$('#userTable').on('click-row.bs.table', function (e, row, $element) {
+		if(configType != 1)
+    		return;
+		recoverVideoTree();
+        var userId = row.userid;
+        $.get('/video/videoPermission', { userId : userId }, function(list) {
+        	if(list && list.length > 0) {
+        		var ztree = $.fn.zTree.getZTreeObj('videoTree');
+        		$.each(list, function(i, item) {
+        			var znode = ztree.getNodeByParam('id', item.videoId);
+        			if(znode) {
+        				ztree.checkNode(znode, true);
+        				znode.oname = znode.name;
+        				updateNodeName(ztree, znode, item);
+        			}
+        			
+        		})
+        	}
+        });
+    });
+	
+	function updateNodeName(ztree, znode, item) {
+		znode.name += '【有效期 ';
+		znode.name += '['
+		if(item.startDate) {
+			znode.startDate = item.startDate;
+			znode.name += item.startDate + '] 到 [';
+		}
+		else
+			znode.name += '无限期] 到 [';
+		if(item.dueDate) {
+			znode.dueDate = item.dueDate;
+			znode.name += item.dueDate + ']';
+		}
+		else
+			znode.name += '无限期]';
+		znode.name += '】';
+		ztree.updateNode(znode);
+	}
+	
+	var configType = 1;
+	function changeConfigType(type) {
+		configType = type;
+		recoverVideoTree();
+		var options = {};
+		if(type == 1) {
+			options.singleSelect = true;
+		}
+		else
+			options.singleSelect = false;
+		$('#userTable').bootstrapTable('refreshOptions', options);
+	}
+	
+	function submitVideoPermission() {
+		var form = {};
+		form.configType = configType;
+		form.startDate = $('#datetimepicker1 input').val();
+		form.dueDate = $('#datetimepicker2 input').val();
+		form.userIdList = [];
+		var users = $('#userTable').bootstrapTable('getSelections');
+		if(users.length == 0) {
+			layer.alert('请选择用户！', { offset: '150px' });
+			return;
+		}
+		$.each(users, function(i, user) {
+			form.userIdList.push(user.userid);
+		});
+		form.permissionList = [];
+		var nodes = $.fn.zTree.getZTreeObj('videoTree').getCheckedNodes();
+		if(nodes.length > 0) {
+			$.each(nodes, function(i, node) {
+				if(node.type == 'F') {
+					var vp = {
+						videoId: node.id,
+						startDate: node.startDate,
+						dueDate: node.dueDate
+					};
+					form.permissionList.push(vp);
+				}
+			});
+		}
+		$.ajax({
+			url : '/video/submitVideoPermission',
+			type : 'POST',
+			contentType : 'application/json',
+			data : JSON.stringify(form),
+			success : function(result) {
+				if(result && result.status == 'success')
+					layer.alert('保存成功！');
+				else
+					layer.alert('保存失败！');
+			}
+		});
+	}
+	
+	initVideoTree();
+	$('#datetimepicker1,#datetimepicker2').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: moment.locale('zh-cn')
+    }).on('dp.change', function(e) {
+    	if(configType != 1)
+    		return;
+    	var ztree = $.fn.zTree.getZTreeObj('videoTree');
+    	var znode = ztree.getSelectedNodes()[0];
+    	if(znode && znode.checked) {
+    		var item = {};
+    		item.startDate = $('#datetimepicker1 input').val();
+    		item.dueDate = $('#datetimepicker2 input').val();
+    		if(znode.oname)
+    			znode.name = znode.oname;
+    		else
+    			znode.oname = znode.name;
+			updateNodeName(ztree, znode, item);
+    	}
+    });
+</script>
+</html>

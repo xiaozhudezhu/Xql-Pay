@@ -1,5 +1,6 @@
 package com.swinginwind.xql.pay.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,10 @@ public interface VideoService {
 	int submitVideoPermission(VideoPermissionForm form);
 
 	List<VideoType> selectVideoTypeAll();
+	
+	int saveVideoFile(VideoFile videoFile, Integer userId) throws IOException;
+	
+	int deleteVideoFile(String ids);
 
 
 }

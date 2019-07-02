@@ -25,7 +25,7 @@
     delete from video_file
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.swinginwind.xql.pay.entity.VideoFile" >
+  <insert id="insert" parameterType="com.swinginwind.xql.pay.entity.VideoFile" keyProperty="id" useGeneratedKeys="true">
     insert into video_file (id, name, remark, 
       pid, file_id, sort_code, free, 
       create_time, create_user)
@@ -185,20 +185,20 @@ LEFT JOIN (
 	)))
   </select>
   <select id="selectVideoTree" resultType="map" >
-    SELECT
+    (SELECT
 	concat('T', id) AS id,
 	name,
 	concat('T', pid) AS pId,
 	'T' AS type
 	FROM
-		video_type order by sort_code
+		video_type order by sort_code)
 	UNION ALL
-	SELECT
+	(SELECT
 		id,
 		name,
 		concat('T', pid) AS pId,
 		'F' AS type
 	FROM
-		video_file order by sort_code
+		video_file order by sort_code)
   </select>
 </mapper>

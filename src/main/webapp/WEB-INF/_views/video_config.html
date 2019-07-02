@@ -21,29 +21,29 @@
 <link
 	href="/static/zTree/css/zTreeStyle/zTreeStyle.css"
 	rel="stylesheet">
-<title>视频授权</title>
+<title>视频配置</title>
 </head>
-<body ontouchstart class="">
+<body ontouchstart class="container">
 	<div class="row">
-  		<div class="col-md-3" style="padding: 0px 20px;">
+  		<div class="col-md-3">
   			<div>
   				<h3>视频分类</h3>
   			</div>
   			<ul id="videoTypeTree" class="ztree">
   			</ul>
   		</div>
-  		<div class="col-md-9" style="padding: 0px 20px;">
+  		<div class="col-md-9">
   			<h3>&nbsp;视频列表</h3>
   			<div id="videoTableToolbar">
-  				<input type="button" value="新增" class="btn btn-primary" />
-  				<input type="button" value="删除" class="btn btn-danger" />
+  				<input type="button" value="新增" class="btn btn-primary" onclick="editVideoFile()" />
+  				<input type="button" value="删除" class="btn btn-danger" onclick="deleteVideoFile()" />
   			</div>
   			<table id="videoTable" class="table table-no-bordered" data-toggle="table"
 				data-side-pagination="client"
 				data-height="400" data-pagination="true" data-striped="true"
 				data-sortable="true" data-sort-name="sortCode" data-sort-order="asc"
 				data-show-columns="true" data-show-refresh="true" data-search="true"
-				data-search-on-enter-key="true" data-unique-id="userid"
+				data-search-on-enter-key="true" data-unique-id="id"
 				data-smart-display="true" data-page-size="25" data-click-to-select="true"
 				data-click-edit="true" data-toolbar="#videoTableToolbar">
 				<thead>
@@ -54,20 +54,91 @@
 						<th data-field="remark" data-sortable="true"
 							data-sort-name="remark">视频描述</th>
 						<th data-field="fileId" data-align="center" data-sortable="true"
-							data-sort-name="fileId">视频文件ID</th>
+							data-sort-name="fileId">文件ID</th>
 						<th data-field="free" data-align="center" data-sortable="true"
 							data-sort-name="free" data-formatter="formatFree">是否免费</th>
 						<th data-field="sortCode" data-align="center" data-sortable="true"
 							data-sort-name="sortCode">序号</th>
+						<th data-field="" data-align="center" data-sortable="false"
+							data-sort-name="" data-formatter="formatScreenshot">截图</th>
 						<th data-field="createtime" data-align="center" data-sortable="true"
-							data-sort-name="createtime">创建时间</th>
+							data-sort-name="createtime" data-visible="false">创建时间</th>
 						<th data-align="center" data-formatter="operateFormatter">操作</th>
 					</tr>
 				</thead>
 			</table>
   		</div>
 	</div>
-	
+	<div class="modal fade" id="videoFileModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="exampleModalLabel">配置视频</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label for="videoName" class="col-sm-3 control-label">视频名称:</label> 
+							<div class="col-sm-8">
+							<input
+								type="text" class="form-control" name="name" id="videoName">
+								</div>
+						</div>
+						<div class="form-group">
+							<label for="videoRemark" class="col-sm-3 control-label">视频描述:</label>
+							<div class="col-sm-8">
+								<textarea class="form-control" id="videoRemark" name="remark"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="videoRemark" class="col-sm-3 control-label">视频文件ID:</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" name="fileId" id="videoFileId">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="videoFree">是否免费：</label>
+							<div class="col-sm-2">
+								<select class="form-control" id="videoFree" name="free">
+									<option value="0">否</option>
+									<option value="1">是</option>
+								</select>
+							</div>
+							<label class="col-sm-3 control-label" form="videoSortCode">序号：</label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control" id="videoSortCode" name="sortCode">
+							</div>
+						</div>
+						<input type="hidden" class="form-control" id="videoCreateTime" name="createTime">
+						<input type="hidden" class="form-control" id="videoId" name="id">
+						<input type="hidden" class="form-control" id="videoPid" name="pid">
+						<input type="hidden" class="form-control" id="screenshotContent" name="screenshotContent">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">截图:</label>
+							<div class="col-sm-8">
+							<button class="btn btn-success" onclick="loadVideo($('#videoFileId').val());return false;">点击加载视频</button>
+							&nbsp;&nbsp;<button class="btn btn-success" onclick="screenshot();return false;">点击截图</button>
+							<hr style="margin: 5px;">
+							<video style="width: 100%; height: 200px; " id="player-container-id" preload="auto" playsinline webkit-playsinline crossorigin="anonymous">
+							</video>
+							<hr style="margin: 5px;">
+							<canvas id="screenshotCanvas"></canvas>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="saveVideoFile()">保存</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 
@@ -84,15 +155,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
 <script src="/static/layer/layer.js"></script>
+
+<!-- 引入播放器 css 文件 -->
+  <link href="https://imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.css" rel="stylesheet">
+  <!-- 如需在IE8、9浏览器中初始化播放器，浏览器需支持Flash并在页面中引入 -->
+  <!--[if lt IE 9]>
+  <script src="//imgcache.qq.com/open/qcloud/video/tcplayer/ie8/videojs-ie8.js"></script>
+  <![endif]-->
+  <!-- 如果需要在 Chrome Firefox 等现代浏览器中通过H5播放hls，需要引入 hls.js -->
+  <script src="https://imgcache.qq.com/open/qcloud/video/tcplayer/lib/hls.min.0.8.8.js"></script>
+  <!-- 引入播放器 js 文件 -->
+  <script src="https://imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.min.js"></script>
+
 <script type="text/javascript">
 	
 	function formatFree(value, record) {
 		return value == '1' ? '免费' : '-';
 	}
 	
+	function formatScreenshot(value, record) {
+		return '<img height="40" src="/video/screenshot/' + record.id + '" onerror="$(this).remove();">';
+	}
+	
 	function operateFormatter(value, row) {
 		return [
-						'<a class="like" href="javascript:openRefundModal(' + row.id + ')" title="编辑">',
+						'<a class="like" href="javascript:editVideoFile(' + row.id + ')" title="编辑">',
 						'<i class="fa fa-heart-o"></i>', '编辑</a>  ' ].join('');
 	}
 	
@@ -119,6 +206,7 @@
 	            	onClick: function(e, treeId, node) {
 	            		var options = { url: '/video/getVideoFileByPid?pid=' + node.id };
 	            		$('#videoTable').bootstrapTable('refreshOptions', options);
+	            		$('#videoPid').val(node.id);
 	            	}
 	            }
 	        };
@@ -128,140 +216,133 @@
 	        });
 	}
 	
-	function recoverVideoTree() {
-		$('#datetimepicker1 input').val('');
-		$('#datetimepicker2 input').val('');
-		var ztree = $.fn.zTree.getZTreeObj('videoTree');
-		ztree.checkAllNodes(false);
-		ztree.cancelSelectedNode(ztree.getSelectedNodes()[0]);
-		var nodes = ztree.getNodesByFilter(function(node) {
-			return !!node.oname;
-		});
-		$.each(nodes, function(i, node) {
-			if(node.oname) {
-				delete node['startDate'];
-				delete node['startDate'];
-				node.name = node.oname;
-				delete node['oname'];
-				ztree.updateNode(node);
-			}
-		});
+	var player;
+	function editVideoFile(id) {
+		if(id) {
+			var row = $('#videoTable').bootstrapTable('getRowByUniqueId', id);
+			$('#videoFileModal :input').each(function(i, input) {
+				$(input).val(row[$(input).attr('name')]);
+			});
+			loadVideo(row.fileId);
+		}
+		else {
+			$('#videoFileModal :input :not(#videoPid)').val('');
+			loadVideo();
+		}
+		initCanvas(id);
+		$('#videoFileModal').modal();
+		
 	}
 	
-	$('#userTable').on('click-row.bs.table', function (e, row, $element) {
-		if(configType != 1)
-    		return;
-		recoverVideoTree();
-        var userId = row.userid;
-        $.get('/video/videoPermission', { userId : userId }, function(list) {
-        	if(list && list.length > 0) {
-        		var ztree = $.fn.zTree.getZTreeObj('videoTree');
-        		$.each(list, function(i, item) {
-        			var znode = ztree.getNodeByParam('id', item.videoId);
-        			if(znode) {
-        				ztree.checkNode(znode, true);
-        				znode.oname = znode.name;
-        				updateNodeName(ztree, znode, item);
-        			}
-        			
-        		})
-        	}
-        });
-    });
-	
-	function updateNodeName(ztree, znode, item) {
-		znode.name += '【有效期 ';
-		znode.name += '['
-		if(item.startDate) {
-			znode.startDate = item.startDate;
-			znode.name += item.startDate + '] 到 [';
-		}
-		else
-			znode.name += '无限期] 到 [';
-		if(item.dueDate) {
-			znode.dueDate = item.dueDate;
-			znode.name += item.dueDate + ']';
-		}
-		else
-			znode.name += '无限期]';
-		znode.name += '】';
-		ztree.updateNode(znode);
-	}
-	
-	var configType = 1;
-	function changeConfigType(type) {
-		configType = type;
-		recoverVideoTree();
-		var options = {};
-		if(type == 1) {
-			options.singleSelect = true;
-		}
-		else
-			options.singleSelect = false;
-		$('#userTable').bootstrapTable('refreshOptions', options);
-	}
-	
-	function submitVideoPermission() {
-		var form = {};
-		form.configType = configType;
-		form.startDate = $('#datetimepicker1 input').val();
-		form.dueDate = $('#datetimepicker2 input').val();
-		form.userIdList = [];
-		var users = $('#userTable').bootstrapTable('getSelections');
-		if(users.length == 0) {
-			layer.alert('请选择用户！', { offset: '150px' });
-			return;
-		}
-		$.each(users, function(i, user) {
-			form.userIdList.push(user.userid);
-		});
-		form.permissionList = [];
-		var nodes = $.fn.zTree.getZTreeObj('videoTree').getCheckedNodes();
-		if(nodes.length > 0) {
-			$.each(nodes, function(i, node) {
-				if(node.type == 'F') {
-					var vp = {
-						videoId: node.id,
-						startDate: node.startDate,
-						dueDate: node.dueDate
-					};
-					form.permissionList.push(vp);
-				}
+	function loadVideo(fileId) {
+		fileId = fileId || 'demo';
+		if(!player) {
+			player = TCPlayer('player-container-id', { // player-container-id 为播放器容器ID，必须与html中一致
+			    fileID: fileId, // 请传入需要播放的视频filID 必须
+			    appID: '1252392416' // 请传入点播账号的appID 必须
 			});
 		}
-		$.ajax({
-			url : '/video/submitVideoPermission',
-			type : 'POST',
-			contentType : 'application/json',
-			data : JSON.stringify(form),
-			success : function(result) {
-				if(result && result.status == 'success')
-					layer.alert('保存成功！');
-				else
-					layer.alert('保存失败！');
-			}
-		});
+		else
+			player.loadVideoByID({ fileID: fileId, appID: '1252392416' });
 	}
 	
-	initVideoTypeTree();
-	$('#datetimepicker1,#datetimepicker2').datetimepicker({
-        format: 'YYYY-MM-DD',
-        locale: moment.locale('zh-cn')
-    }).on('dp.change', function(e) {
-    	if(configType != 1)
-    		return;
-    	var ztree = $.fn.zTree.getZTreeObj('videoTree');
-    	var znode = ztree.getSelectedNodes()[0];
-    	if(znode && znode.checked) {
-    		var item = {};
-    		item.startDate = $('#datetimepicker1 input').val();
-    		item.dueDate = $('#datetimepicker2 input').val();
-    		if(znode.oname)
-    			znode.name = znode.oname;
-    		else
-    			znode.oname = znode.name;
-			updateNodeName(ztree, znode, item);
+	function saveVideoFile() {
+		var file = {};
+		$('#videoFileModal :input').each(function(i, input) {
+			file[$(input).attr('name')] = $(input).val();
+		});
+		if(!file.pid) {
+			layer.alert('请先选择视频分类');
+			return;
+		}
+		if(!file.name) {
+			layer.alert('请输入视频名称');
+			return;
+		}
+		if(!file.fileId) {
+			layer.alert('请输入腾讯云点播视频文件ID');
+			return;
+		}
+		$.ajax({
+			url: '/video/saveVideoFile',
+			type: 'post',
+			data: file,
+			success: function(result) {
+				if(result.status == 'success') {
+					layer.msg('保存成功');
+					$('#videoTable').bootstrapTable('refresh');
+					$('#videoFileModal').modal('hide');
+				}
+				else
+					layer.alert('保存失败');
+			},
+			error: function(result) {
+				layer.alert('保存失败');
+			}
+		});
+		
+	}
+	
+	function deleteVideoFile() {
+		var files = $('#videoTable').bootstrapTable('getSelections');
+		if(files.length == 0) {
+			layer.alert('请选择需要删除的视频！', { offset: '150px' });
+			return;
+		}
+		layer.confirm('是否确认删除？', function() {
+			var ids = [];
+			$.each(files, function(i, file) {
+				ids.push(file.id);
+			});
+			$.ajax({
+				url: '/video/deleteVideoFile',
+				type: 'post',
+				data: { ids: ids.join(',') },
+				success: function(result) {
+					if(result.status == 'success') {
+						layer.msg('删除成功');
+						$('#videoTable').bootstrapTable('refresh');
+					}
+					else
+						layer.alert('删除失败');
+				},
+				error: function(result) {
+					layer.alert('删除失败');
+				}
+			});
+			
+		});
+		
+	}
+    
+    function screenshot() {
+    	var canvas = document.getElementById('screenshotCanvas');
+        var ctx = canvas.getContext('2d');
+        var width = $('#player-container-id video').width();
+        var height = $('#player-container-id video').height();
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage($('#player-container-id video')[0], 0, 0, width, height);  // 将video中的数据绘制到canvas里
+    	$('#screenshotContent').val(canvas.toDataURL('image/png').substring(22));
+        layer.msg('截图成功');
+    }
+    
+    function initCanvas(id) {
+    	var canvas = document.getElementById('screenshotCanvas');
+    	canvas.height = canvas.height;
+    	if(id) {
+    		var Img = new Image(), dataURL='';
+        	Img.src = '/video/screenshot/' + id;
+        	Img.onload = function(){ //要先确保图片完整获取到，这是个异步事件
+    	        var width=Img.width, //确保canvas的尺寸和图片一样
+    	            height=Img.height;
+    	        canvas.width=width;
+    	        canvas.height=height;
+    	        canvas.getContext("2d").drawImage(Img,0,0,width,height); //将图片绘制到canvas中
+        	}
     	}
-    });
+    }
+	
+	initVideoTypeTree();
 </script>
 </html>

@@ -1,12 +1,15 @@
 package com.swinginwind.xql.pay.service.impl;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.swinginwind.core.FileUtil;
+import com.swinginwind.xql.pay.config.AppConfig;
 import com.swinginwind.xql.pay.entity.VideoFile;
 import com.swinginwind.xql.pay.entity.VideoPermission;
 import com.swinginwind.xql.pay.entity.VideoPermissionForm;
@@ -25,6 +28,9 @@ public class VideoServiceImpl implements VideoService {
 	VideoFileMapper videoFileMapper;
 	@Autowired
 	VideoPermissionMapper videoPermissionMapper;
+	
+	@Autowired
+	AppConfig appConfig;
 
 	@Override
 	public List<VideoType> selectVideoTypeByPid(Integer pid) {
@@ -82,5 +88,32 @@ public class VideoServiceImpl implements VideoService {
 		}
 		return count;
 	}
+
+	@Override
+	public int saveVideoFile(VideoFile videoFile, Integer userId) throws IOException {
+		if(videoFile.getId() == null) {
+			videoFile.setCreateTime(new Date());
+			videoFile.setCreateUser(String.valueOf(userId));
+			videoFileMapper.insert(videoFile);
+		}
+		else {
+			videoFileMapper.updateByPrimaryKey(videoFile);
+		}
+		if(videoFile.getScreenshotContent() != null) {
+			String path = appConfig.getFileDir() + "/screenshot/" + videoFile.getId() + ".png";
+			FileUtil.base64ToImage(videoFile.getScreenshotContent(), path);
+		}
+		return 1;
+	}
+
+	@Override
+	public int deleteVideoFile(String ids) {
+		String[] idList = ids.split(",");
+		for(String id : idList)
+			videoFileMapper.deleteByPrimaryKey(Integer.parseInt(id));
+		return idList.length;
+	}
+	
+	
 
 }

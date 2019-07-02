@@ -14,6 +14,8 @@ public class AppConfig {
 	private List<Integer> adminIds;
 	
 	private String xqlUrl;
+	
+	private String fileDir;
 
 	public List<Integer> getAdminIds() {
 		return adminIds;
@@ -29,6 +31,14 @@ public class AppConfig {
 
 	public void setXqlUrl(String xqlUrl) {
 		this.xqlUrl = xqlUrl;
+	}
+
+	public String getFileDir() {
+		return fileDir;
+	}
+
+	public void setFileDir(String fileDir) {
+		this.fileDir = fileDir;
 	}
 
 

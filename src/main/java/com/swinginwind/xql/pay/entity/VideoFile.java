@@ -68,6 +68,8 @@ public class VideoFile {
     private String createUser;
     
     private String permitted;
+    
+    private String screenshotContent;
 
     public Integer getId() {
         return id;
@@ -147,5 +149,13 @@ public class VideoFile {
 
 	public void setFree(String free) {
 		this.free = free;
+	}
+
+	public String getScreenshotContent() {
+		return screenshotContent;
+	}
+
+	public void setScreenshotContent(String screenshotContent) {
+		this.screenshotContent = screenshotContent;
 	}
 }

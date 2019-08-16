@@ -226,7 +226,7 @@
 			loadVideo(row.fileId);
 		}
 		else {
-			$('#videoFileModal :input :not(#videoPid)').val('');
+			$('#videoFileModal :input:not(#videoPid)').val('');
 			loadVideo();
 		}
 		initCanvas(id);

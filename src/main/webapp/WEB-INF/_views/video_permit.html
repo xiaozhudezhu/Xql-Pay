@@ -24,7 +24,7 @@
 <title>视频授权</title>
 </head>
 <body ontouchstart class="">
-	<div class="row">
+	<div class="row" style="margin: auto;">
   		<div class="col-md-6" style="padding: 0px 20px;">
   			<h3>&nbsp;用户列表</h3>
   			<div style="margin-left: 200px; margin-top: -35px;">
@@ -94,7 +94,7 @@
 			    </div>
 			</div>
 			<label>视频：</label>
-  			<ul id="videoTree" class="ztree">
+  			<ul id="videoTree" class="ztree" style="height: calc(100% - 170px); overflow: auto;">
   			</ul>
   		</div>
 	</div>
@@ -178,7 +178,7 @@
 		$.each(nodes, function(i, node) {
 			if(node.oname) {
 				delete node['startDate'];
-				delete node['startDate'];
+				delete node['dueDate'];
 				node.name = node.oname;
 				delete node['oname'];
 				ztree.updateNode(node);

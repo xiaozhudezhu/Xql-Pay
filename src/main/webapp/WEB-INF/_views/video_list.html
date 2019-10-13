@@ -13,6 +13,22 @@
     <script src="/static/js/iscroll-lite.js"></script>
     
     <style>
+    .weui-mark-desc::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width : 5px;  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 1px;
+  }
+  .weui-mark-desc::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius   : 5px;
+  background-color: #bbb;
+  }
+  .weui-mark-desc::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background   : #eee;
+  border-radius: 5px;
+  }
     .weui-navbar__item {
     	cursor: pointer;
     }
@@ -49,9 +65,14 @@
     	color: #444;
     	font-size: 1.1em;
 	}
-	.weui-mark-title, .weui-mark-desc {
+	.weui-mark-desc {
     	white-space: normal;
     }
+    
+    .weui-mark-desc {
+   		height: 90px;
+    	overflow: auto;
+	}
 	    
     .container {
     	bottom: auto;

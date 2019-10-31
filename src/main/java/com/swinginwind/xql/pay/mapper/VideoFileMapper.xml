@@ -157,11 +157,11 @@ LEFT JOIN (
 	WHERE
 		t2.user_id = #{userId}
 	AND (
-		t2.due_date > sysdate()
+		t2.due_date &gt; sysdate()
 		OR t2.due_date IS NULL
 	)
 	AND (
-		t2.start_date > sysDate()
+		t2.start_date &lt; sysDate()
 		OR t2.start_date IS NULL
 	)
 ) t3 ON t1.id = t3.video_id
@@ -176,11 +176,11 @@ LEFT JOIN (
 		t2.user_id = #{userId}
 	AND t2.video_id = t1.id
 	AND (
-		t2.due_date > sysdate()
+		t2.due_date &gt; sysdate()
 		OR t2.due_date IS NULL
 	)
 	AND (
-		t2.start_date > sysDate()
+		t2.start_date &lt; sysDate()
 		OR t2.start_date IS NULL
 	)))
   </select>

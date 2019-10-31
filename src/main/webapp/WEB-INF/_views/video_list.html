@@ -123,8 +123,8 @@
     		        			$l2.append('<li><a href="javascript:loadVideoFile(' + item2.id + ')">' + item2.name + '</a></li>')
     		        		});
     		        		if(list2.length > 0) {
-    		        			TagNav('#tabVideoType2', {
-            		                type: '',
+    		        			new TagNav('#tabVideoType2', {
+            		                type: 'scrollToNext',
             		                curClassName: 'weui-state-active',
             		                index: 0
             		            });

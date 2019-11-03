@@ -1,5 +1,6 @@
 package com.swinginwind.xql.pay.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -50,6 +51,8 @@ public class VideoFile {
     private Byte sortCode;
     
     private String free;
+    
+    private BigDecimal price;
 
     /**
      * 
@@ -157,5 +160,13 @@ public class VideoFile {
 
 	public void setScreenshotContent(String screenshotContent) {
 		this.screenshotContent = screenshotContent;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
 	}
 }

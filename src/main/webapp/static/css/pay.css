@@ -23,7 +23,7 @@ body{
     margin-top: 78px;
 }
 .weui-wepay-pay-select__element{
-    margin-top: 28px;
+    margin-top: 12px;
     margin-right: -12px;
     overflow: hidden;
 }
@@ -38,7 +38,7 @@ body{
 .weui-wepay-pay-select__item{
     display: block;
     border: 1px solid #DADADA;
-    color: #dadada;
+    color: #555;
     height: 38px;
     line-height: 38px;
     text-align: center;

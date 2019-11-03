@@ -7,7 +7,7 @@ spring:
       name: mydb  
       type: com.alibaba.druid.pool.DruidDataSource  
       username: root
-      password: gener
+      password: gener2017
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://192.168.3.28:3306/xql?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+      url: jdbc:mysql://192.168.3.20:3306/xql?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
 

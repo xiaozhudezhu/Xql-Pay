@@ -190,5 +190,13 @@ public class VideoController {
 			}
 		}
 	}
+	
+	
+	@RequestMapping(value = "/videoPayPage", method = RequestMethod.GET)
+	public ModelAndView videoPayPage() {
+		ModelAndView mv = null;
+		mv = new ModelAndView("video_pay.html");
+		return mv;
+	}
 
 }

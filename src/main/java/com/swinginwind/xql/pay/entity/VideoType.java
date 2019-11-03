@@ -1,5 +1,6 @@
 package com.swinginwind.xql.pay.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class VideoType {
@@ -30,6 +31,8 @@ public class VideoType {
      * 对应字段 : pid
      */
     private Integer pid;
+    
+    private BigDecimal price;
 
     /**
      * 
@@ -107,4 +110,12 @@ public class VideoType {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
 }

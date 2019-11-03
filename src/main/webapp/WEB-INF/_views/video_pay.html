@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta
+	content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+	name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<meta content="email=no" name="format-detection">
+<link rel="stylesheet" href="https://act.weixin.qq.com/static/cdn/css/wepayui/0.1.1/wepayui.min.css">
+<link rel="stylesheet" href="http://cdn.bootcss.com/weui/1.1.1/style/weui.min.css">
+<link rel="stylesheet" href="http://cdn.bootcss.com/jquery-weui/1.0.1/css/jquery-weui.min.css">
+<link rel="stylesheet" href="/static/css/pay.css">
+
+<style>
+
+
+</style>
+<script src="http://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+<script
+	src="http://cdn.bootcss.com/jquery-weui/1.0.1/js/jquery-weui.min.js"></script>
+<script src="/static/layer/layer.js"></script>
+<script>
+$(document)
+.ready(
+		function() {
+			$
+					.get(
+							'/video/getVideoTypeAll',
+							function(data) {
+								var html = '';
+								var parent = [];
+								var childrenMap = {};
+								$.each(data, function(i, item) {
+									if(item.pid == 0)
+										parent.push(item);
+									else {
+										if(!childrenMap[item.pid])
+											childrenMap[item.pid] = [];
+										childrenMap[item.pid].push(item);
+									}
+								});
+								$.each(parent, function(k, itemP) {
+									html += '<h4>' + itemP.name
+										+ '&nbsp;&nbsp;<label style="font-size: 15px;font-weight: normal;">'
+										+ '<input type="checkbox" onchange="selectAllProduct(event)" style="'
+									    + 'vertical-align: middle;margin-top: -2px;"> 全选</label></h4>';
+									html += '<ul class="weui-wepay-pay-select__element">';
+									$.each(childrenMap[itemP.id], function(i, item) {
+										html += '<li class="weui-wepay-pay-select__li">'
+											+ '<a href="javascript:;" class="weui-wepay-pay-select__item'
+											+ (i == 100 ? ' weui-wepay-pay-select__item_on'
+													: '')
+											+ '" productId="'
+											+ item.id
+											+ '" price="'
+											+ item.price
+											+ '">'
+											+ item.name + ' ¥' + item.price
+											+ '</a>'
+											+ '</li>';
+									});
+									html += '</ul>';
+								});
+								$('.pay-product').html(html);
+								$(".weui-wepay-pay-select__li").click(function() {
+									$(this).children().toggleClass('weui-wepay-pay-select__item_on');
+									reCalculatePrice();
+								});
+							});
+
+			if (isWxBrowser()) {
+				$('.pay-way li:eq(0)').hide();
+				$('.pay-way a:eq(0)').removeClass(
+						'weui-wepay-pay-select__item_on');
+				$('.pay-way a:eq(1)').addClass(
+						'weui-wepay-pay-select__item_on');
+			}
+			;
+
+		});
+
+function reCalculatePrice() {
+	var $productSelect = $('.pay-product .weui-wepay-pay-select__item_on');
+	var totalAmount = 0;
+	$productSelect.each(function(i, item) {
+		totalAmount += parseFloat($(item).attr('price'));
+	});
+	$('#totalPriceDom').html(Math.round(totalAmount*100) / 100);
+}
+
+function selectAllProduct(e) {
+	var $input = $(e.target);
+	var checked = $input.prop('checked');
+	console.log(checked);
+	if(checked)
+		$input.parent().parent().next().find('.weui-wepay-pay-select__item').addClass('weui-wepay-pay-select__item_on');
+	else
+		$input.parent().parent().next().find('.weui-wepay-pay-select__item').removeClass('weui-wepay-pay-select__item_on');
+	reCalculatePrice();
+}
+
+
+function pay(payWay, payAmount, productId, productName) {
+var payWay = $('.pay-way .weui-wepay-pay-select__item_on').attr('payWay');
+var $productSelect = $('.pay-product .weui-wepay-pay-select__item_on');
+var payMethod = /Android|webOS|iPhone|iPod|BlackBerry/i
+	.test(navigator.userAgent) ? 'wapPay' : 'pcPay';
+var totalAmount = $('#totalPriceDom').text();
+var productName = '学球乐产品';
+var productId = '2';
+if (payWay == 'wxpay') {
+wxPay(payWay, payMethod, totalAmount, productName, productId);
+} else if (payWay == 'alipay') {
+aliPay(payWay, payMethod, totalAmount, productName, productId);
+}
+}
+
+function isWxBrowser() {
+var ua = window.navigator.userAgent.toLowerCase();
+if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+return true;
+} else {
+return false;
+}
+}
+
+/**
+* 支付宝支付
+* 
+* @param payWay
+* @param payMethod
+* @param totalAmount
+* @param productName
+* @param productId
+*/
+function aliPay(payWay, payMethod, totalAmount, productName, productId) {
+window.location.href = payWay + '/' + payMethod + '?productName='
+	+ productName + '&totalAmount=' + totalAmount + '&productId='
+	+ productId;
+}
+
+/**
+* 微信支付
+* 
+* @param payWay
+* @param payMethod
+* @param totalAmount
+* @param productName
+* @param productId
+*/
+function wxPay(payWay, payMethod, totalAmount, productName, productId) {
+if (payMethod == 'wapPay') {
+if(isWxBrowser())
+	wxPayWeb(payWay, payMethod, totalAmount, productName, productId);
+else
+	wxPayWap(payWay, payMethod, totalAmount, productName, productId);
+}
+else if (payMethod == 'pcPay')
+wxPayScanCode(payWay, payMethod, totalAmount, productName, productId);
+}
+
+/* 微信扫码支付 */
+function wxPayScanCode(payWay, payMethod, totalAmount, productName, productId) {
+$.showLoading("正在加载...");
+$.post("/wxpay/scanCode1", {
+productId : productId,
+}, function(res) {
+$.hideLoading();
+if (res.code == 0) {
+	var name = res.data;
+	console.log(name);
+	wxShowScanCode('#qrcode1', name);
+} else {
+	if (res.code == 2) {
+		layer.alert(res.message);
+	} else {
+		layer.msg("error：" + res.message, {
+			shift : 6
+		});
+	}
+}
+});
+
+}
+
+function wxShowScanCode(id, name) {
+$(id).attr('src', '/' + name);
+layer.open({
+type : 1,
+shade : true,
+title : "请打开微信客户端扫码支付",
+content : $('#qrcode1').parent()
+});
+
+}
+/* 微信扫码支付 END */
+/* 微信公众号支付支付 */
+function wxPayWeb(payWay, payMethod, totalAmount, productName, productId) {
+$.showLoading("正在加载...");
+$.post("/wxpay/webPay", {
+totalAmount : totalAmount * 100,
+productName : productName,
+productId : productId
+}, function(res) {
+$.hideLoading();
+if (res.code == 0) {
+	var data = $.parseJSON(res.data);
+	//top.postMessage({ type: 'mpPay', data: data }, '*');
+	if (typeof WeixinJSBridge == "undefined") {
+		if (document.addEventListener) {
+			document.addEventListener('WeixinJSBridgeReady',
+					onBridgeReady(data), false);
+		} else if (document.attachEvent) {
+			document.attachEvent('WeixinJSBridgeReady',
+					onBridgeReady(data));
+			document.attachEvent('onWeixinJSBridgeReady',
+					onBridgeReady(data));
+		}
+	} else {
+		onBridgeReady(data);
+	}
+} else {
+	if (res.code == 2) {
+		layer.alert(res.message);
+	} else {
+		layer.msg("error：" + res.message, {
+			shift : 6
+		});
+	}
+}
+});
+
+}
+
+function onBridgeReady(json) {
+WeixinJSBridge.invoke('getBrandWCPayRequest', json, function(res) {
+// 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回 ok，但并不保证它绝对可靠。
+if (res.err_msg == "get_brand_wcpay_request:ok") {
+	layer.msg("支付成功", {
+		shift : 6
+	});
+
+	self.location = "success";
+
+} else {
+	layer.msg("支付失败", {
+		shift : 6
+	});
+}
+});
+}
+/* 微信公众号支付支付 END */
+
+/**
+* 微信h5支付
+*/
+function wxPayWap(payWay, payMethod, totalAmount, productName, productId) {
+window.location.href = '/wxpay/wapPay' + '?productName='
+	+ productName + '&totalAmount=' + (totalAmount * 100) + '&productId='
+	+ productId;
+}
+
+</script>
+
+<title>购买学球乐产品</title>
+
+</head>
+<!-- 
+	通用说明： 
+	1.模块的隐藏添加class:hide;
+	2.body标签默认绑定ontouchstart事件，激活所有按钮的:active效果
+-->
+<body ontouchstart>
+
+	<div class="weui-wepay-pay-select">
+		<div class="weui-wepay-pay-select__hd">
+			<h1 class="weui-wepay-pay-select__title">购买学球乐视频课程</h1>
+			<p class="weui-wepay-pay-select__info">支付总价格：¥<font id="totalPriceDom">0</font></p>
+		</div>
+		<div class="weui-wepay-pay-select__bd pay-product">
+		</div>
+		<div class="weui-wepay-pay-select__hd">
+			有效期：3个月
+		</div>
+		<div class="weui-wepay-pay-select__hd">
+			<p class="weui-wepay-pay-select__info">选择付款方式</p>
+		</div>
+		<div class="weui-wepay-pay-select__bd">
+			<ul class="weui-wepay-pay-select__element pay-way">
+				<li class="weui-wepay-pay-select__li"><a href="javascript:;"
+					class="weui-wepay-pay-select__item"
+					payWay="alipay">支付宝</a></li>
+				<li class="weui-wepay-pay-select__li"><a href="javascript:;"
+					class="weui-wepay-pay-select__item weui-wepay-pay-select__item_on" payWay="wxpay">微信</a></li>
+			</ul>
+		</div>
+		<div class="weui-wepay-pay-select__ft">
+			<!-- <p class="weui-wepay-pay-select__info">*
+				支付宝测试买家账号：drkudo7520@sandbox.com，密码：111111</p> -->
+			<div class="weui-wepay-pay__btn">
+				<a href="javascript:pay()" class="weui-btn weui-btn_primary">立即支付</a>
+			</div>
+			<p class="weui-wepay-pay__info">
+				点击上面的“立即支付”按钮，即表示你同意<a href="javascript:;"
+					class="weui-wepay-color-blue">条款声明</a>。
+			</p>
+		</div>
+	</div>
+	<div style="text-align: center; display: none; width: 250px; height: 220px;">
+		<img id="qrcode1" alt="" src="">
+	</div>
+	<div class="weui-wepay-logos weui-wepay-logos_ft">
+		<img
+			src="https://act.weixin.qq.com/static/cdn/img/wepayui/0.1.1/wepay_logo_default_gray.svg"
+			alt="" height="16">
+	</div>
+
+</body>
+</html>

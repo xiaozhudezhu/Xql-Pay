@@ -21,8 +21,8 @@
 			<property name="suppressMapperComments" value="false" /> -->
 		</commentGenerator>
 
-		<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.3.28:3306/xql"
-			userId="root" password="gener">
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.3.20:3306/xql"
+			userId="root" password="gener2017">
 			<!-- 针对oracle数据库 -->
 <!-- 		    <property name="remarks" value="true"></property>
  -->		    <!-- 针对mysql数据库 -->
@@ -52,7 +52,7 @@
 		</javaClientGenerator>
 	
 	
-		<table tableName="video_permission" domainObjectName="VideoPermission"
+		<table tableName="base_order" domainObjectName="BaseOrder"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false" schema="wdn">

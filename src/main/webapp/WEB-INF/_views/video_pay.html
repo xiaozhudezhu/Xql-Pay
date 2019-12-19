@@ -43,16 +43,15 @@ $(document)
 									}
 								});
 								$.each(parent, function(k, itemP) {
-									html += '<h4>' + itemP.name
+									html += '<h4>' + itemP.name + '&nbsp;<label>¥' + itemP.price + '</label>'
 										+ '&nbsp;&nbsp;<label style="font-size: 15px;font-weight: normal;">'
-										+ '<input type="checkbox" onchange="selectAllProduct(event)" style="'
+										+ '<input type="checkbox" onchange="selectAllProduct(event)" price="'
+										+ itemP.price + '" style="'
 									    + 'vertical-align: middle;margin-top: -2px;"> 全选</label></h4>';
-									html += '<ul class="weui-wepay-pay-select__element">';
+									html += '<ul class="weui-wepay-pay-select__element" price="' + itemP.price + '">';
 									$.each(childrenMap[itemP.id], function(i, item) {
 										html += '<li class="weui-wepay-pay-select__li">'
 											+ '<a href="javascript:;" class="weui-wepay-pay-select__item'
-											+ (i == 100 ? ' weui-wepay-pay-select__item_on'
-													: '')
 											+ '" productId="'
 											+ item.id
 											+ '" price="'
@@ -65,7 +64,7 @@ $(document)
 									html += '</ul>';
 								});
 								$('.pay-product').html(html);
-								$(".weui-wepay-pay-select__li").click(function() {
+								$(".pay-product .weui-wepay-pay-select__li").click(function() {
 									$(this).children().toggleClass('weui-wepay-pay-select__item_on');
 									reCalculatePrice();
 								});
@@ -83,10 +82,20 @@ $(document)
 		});
 
 function reCalculatePrice() {
-	var $productSelect = $('.pay-product .weui-wepay-pay-select__item_on');
 	var totalAmount = 0;
-	$productSelect.each(function(i, item) {
-		totalAmount += parseFloat($(item).attr('price'));
+	$('.pay-product .weui-wepay-pay-select__element').each(function(i, ul) {
+		var totalAmountPart = 0, selectAll = true;
+		$(ul).find('.weui-wepay-pay-select__item').each(function(j, a) {
+			var price = parseFloat($(a).attr('price'));
+			if($(a).hasClass('weui-wepay-pay-select__item_on')) {
+				totalAmountPart += price;
+			}
+			else if(price > 0)
+				selectAll = false;
+		});
+		if(selectAll)
+			totalAmountPart = parseFloat($(ul).attr('price'));
+		totalAmount += totalAmountPart;
 	});
 	$('#totalPriceDom').html(Math.round(totalAmount*100) / 100);
 }
@@ -103,28 +112,54 @@ function selectAllProduct(e) {
 }
 
 
-function pay(payWay, payAmount, productId, productName) {
-var payWay = $('.pay-way .weui-wepay-pay-select__item_on').attr('payWay');
-var $productSelect = $('.pay-product .weui-wepay-pay-select__item_on');
-var payMethod = /Android|webOS|iPhone|iPod|BlackBerry/i
-	.test(navigator.userAgent) ? 'wapPay' : 'pcPay';
-var totalAmount = $('#totalPriceDom').text();
-var productName = '学球乐产品';
-var productId = '2';
-if (payWay == 'wxpay') {
-wxPay(payWay, payMethod, totalAmount, productName, productId);
-} else if (payWay == 'alipay') {
-aliPay(payWay, payMethod, totalAmount, productName, productId);
+function pay() {
+	var payWay = $('.pay-way .weui-wepay-pay-select__item_on').attr('payWay');
+	var $productSelect = $('.pay-product .weui-wepay-pay-select__item_on');
+	var payMethod = /Android|webOS|iPhone|iPod|BlackBerry/i
+		.test(navigator.userAgent) ? 'wapPay' : 'pcPay';
+	var totalAmount = $('#totalPriceDom').text();
+	var orderContent = { videoTypes: [] };
+	$productSelect.each(function(i, item) {
+		orderContent.videoTypes.push({ productId: $(item).attr('productid'), price: $(item).attr('price'),
+			name: $(item).text() 
+		});
+	});
+	createOrder(orderContent, totalAmount, function(orderId) {
+		if (payWay == 'wxpay') {
+			wxPay(payWay, payMethod, orderId);
+		} else if (payWay == 'alipay') {
+			aliPay(payWay, payMethod, orderId);
+		}
+	})
+	
 }
+
+function createOrder(orderContent, amount, success) {
+	$.showLoading("正在创建订单...");
+	$.ajax({
+		url : '/order/create',
+		type : 'POST',
+		data : { orderContent: JSON.stringify(orderContent), amount: amount },
+		success : function(result) {
+			if(result && result.status == 'success') {
+				success(result.orderId);
+			}
+			else
+				layer.alert('订单创建失败！');
+		},
+		complete: function() {
+			$.hideLoading();
+		}
+	});
 }
 
 function isWxBrowser() {
-var ua = window.navigator.userAgent.toLowerCase();
-if (ua.match(/MicroMessenger/i) == 'micromessenger') {
-return true;
-} else {
-return false;
-}
+	var ua = window.navigator.userAgent.toLowerCase();
+	if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -136,10 +171,9 @@ return false;
 * @param productName
 * @param productId
 */
-function aliPay(payWay, payMethod, totalAmount, productName, productId) {
-window.location.href = payWay + '/' + payMethod + '?productName='
-	+ productName + '&totalAmount=' + totalAmount + '&productId='
-	+ productId;
+function aliPay(payWay, payMethod, orderId) {
+	window.location.href = payWay + '/' + payMethod + '?orderId='
+		+ orderId;
 }
 
 /**
@@ -151,116 +185,111 @@ window.location.href = payWay + '/' + payMethod + '?productName='
 * @param productName
 * @param productId
 */
-function wxPay(payWay, payMethod, totalAmount, productName, productId) {
-if (payMethod == 'wapPay') {
-if(isWxBrowser())
-	wxPayWeb(payWay, payMethod, totalAmount, productName, productId);
-else
-	wxPayWap(payWay, payMethod, totalAmount, productName, productId);
-}
-else if (payMethod == 'pcPay')
-wxPayScanCode(payWay, payMethod, totalAmount, productName, productId);
+function wxPay(payWay, payMethod, orderId) {
+	if (payMethod == 'wapPay') {
+		if(isWxBrowser())
+			wxPayWeb(payWay, payMethod, orderId);
+		else
+			wxPayWap(payWay, payMethod, orderId);
+	}
+	else if (payMethod == 'pcPay')
+		wxPayScanCode(payWay, payMethod, orderId);
+		
 }
 
 /* 微信扫码支付 */
-function wxPayScanCode(payWay, payMethod, totalAmount, productName, productId) {
-$.showLoading("正在加载...");
-$.post("/wxpay/scanCode1", {
-productId : productId,
-}, function(res) {
-$.hideLoading();
-if (res.code == 0) {
-	var name = res.data;
-	console.log(name);
-	wxShowScanCode('#qrcode1', name);
-} else {
-	if (res.code == 2) {
-		layer.alert(res.message);
-	} else {
-		layer.msg("error：" + res.message, {
-			shift : 6
-		});
-	}
-}
-});
+function wxPayScanCode(payWay, payMethod, orderId) {
+	$.showLoading("正在加载...");
+	$.post("/wxpay/scanCode1", {
+			orderId : orderId
+		}, function(res) {
+			$.hideLoading();
+			if (res.code == 0) {
+				var data = res.data;
+				console.log(data.url);
+				wxShowScanCode('#qrcode1', data.url);
+			} else {
+				if (res.code == 2) {
+					layer.alert(res.message);
+				} else {
+					layer.msg("error：" + res.message, {
+						shift : 6
+					});
+				}
+			}
+	});
 
 }
 
 function wxShowScanCode(id, name) {
-$(id).attr('src', '/' + name);
-layer.open({
-type : 1,
-shade : true,
-title : "请打开微信客户端扫码支付",
-content : $('#qrcode1').parent()
-});
-
+	$(id).attr('src', '/' + name);
+		layer.open({
+		type : 1,
+		shade : true,
+		title : "请打开微信客户端扫码支付",
+		content : $('#qrcode1').parent()
+	});
 }
 /* 微信扫码支付 END */
 /* 微信公众号支付支付 */
-function wxPayWeb(payWay, payMethod, totalAmount, productName, productId) {
-$.showLoading("正在加载...");
-$.post("/wxpay/webPay", {
-totalAmount : totalAmount * 100,
-productName : productName,
-productId : productId
-}, function(res) {
-$.hideLoading();
-if (res.code == 0) {
-	var data = $.parseJSON(res.data);
-	//top.postMessage({ type: 'mpPay', data: data }, '*');
-	if (typeof WeixinJSBridge == "undefined") {
-		if (document.addEventListener) {
-			document.addEventListener('WeixinJSBridgeReady',
-					onBridgeReady(data), false);
-		} else if (document.attachEvent) {
-			document.attachEvent('WeixinJSBridgeReady',
-					onBridgeReady(data));
-			document.attachEvent('onWeixinJSBridgeReady',
-					onBridgeReady(data));
+function wxPayWeb(payWay, payMethod, orderId) {
+	$.showLoading("正在加载...");
+	$.post("/wxpay/webPay", {
+		orderId : orderId
+	}, function(res) {
+		$.hideLoading();
+		if (res.code == 0) {
+			var data = $.parseJSON(res.data);
+			//top.postMessage({ type: 'mpPay', data: data }, '*');
+			if (typeof WeixinJSBridge == "undefined") {
+				if (document.addEventListener) {
+					document.addEventListener('WeixinJSBridgeReady',
+							onBridgeReady(data), false);
+				} else if (document.attachEvent) {
+					document.attachEvent('WeixinJSBridgeReady',
+							onBridgeReady(data));
+					document.attachEvent('onWeixinJSBridgeReady',
+							onBridgeReady(data));
+				}
+			} else {
+				onBridgeReady(data);
+			}
+		} else {
+			if (res.code == 2) {
+				layer.alert(res.message);
+			} else {
+				layer.msg("error：" + res.message, {
+					shift : 6
+				});
+			}
 		}
-	} else {
-		onBridgeReady(data);
-	}
-} else {
-	if (res.code == 2) {
-		layer.alert(res.message);
-	} else {
-		layer.msg("error：" + res.message, {
-			shift : 6
-		});
-	}
-}
-});
+	});
 
 }
 
 function onBridgeReady(json) {
-WeixinJSBridge.invoke('getBrandWCPayRequest', json, function(res) {
-// 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回 ok，但并不保证它绝对可靠。
-if (res.err_msg == "get_brand_wcpay_request:ok") {
-	layer.msg("支付成功", {
-		shift : 6
+	WeixinJSBridge.invoke('getBrandWCPayRequest', json, function(res) {
+		// 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回 ok，但并不保证它绝对可靠。
+		if (res.err_msg == "get_brand_wcpay_request:ok") {
+			layer.msg("支付成功", {
+				shift : 6
+			});
+			self.location = "success";
+		} else {
+			layer.msg("支付失败", {
+				shift : 6
+			});
+		}
 	});
-
-	self.location = "success";
-
-} else {
-	layer.msg("支付失败", {
-		shift : 6
-	});
-}
-});
 }
 /* 微信公众号支付支付 END */
 
 /**
 * 微信h5支付
 */
-function wxPayWap(payWay, payMethod, totalAmount, productName, productId) {
-window.location.href = '/wxpay/wapPay' + '?productName='
-	+ productName + '&totalAmount=' + (totalAmount * 100) + '&productId='
-	+ productId;
+function wxPayWap(payWay, payMethod, orderId) {
+	window.location.href = '/wxpay/wapPay' + '?orderId='
+		+ orderId;
 }
 
 </script>
@@ -311,11 +340,6 @@ window.location.href = '/wxpay/wapPay' + '?productName='
 	</div>
 	<div style="text-align: center; display: none; width: 250px; height: 220px;">
 		<img id="qrcode1" alt="" src="">
-	</div>
-	<div class="weui-wepay-logos weui-wepay-logos_ft">
-		<img
-			src="https://act.weixin.qq.com/static/cdn/img/wepayui/0.1.1/wepay_logo_default_gray.svg"
-			alt="" height="16">
 	</div>
 
 </body>

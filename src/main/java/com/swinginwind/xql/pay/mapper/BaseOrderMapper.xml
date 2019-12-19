@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.swinginwind.xql.pay.mapper.BaseOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.swinginwind.xql.pay.entity.BaseOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_user" property="orderUser" jdbcType="VARCHAR" />
+    <result column="order_time" property="orderTime" jdbcType="TIMESTAMP" />
+    <result column="pay_user" property="payUser" jdbcType="VARCHAR" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.swinginwind.xql.pay.entity.BaseOrder" extends="BaseResultMap" >
+    <result column="order_content" property="orderContent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_user, order_time, pay_user, pay_time, amount, status
+  </sql>
+  <sql id="Blob_Column_List" >
+    order_content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from base_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from base_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.swinginwind.xql.pay.entity.BaseOrder" keyProperty="id" useGeneratedKeys="true">
+    insert into base_order (id, order_user, order_time, 
+      pay_user, pay_time, amount, 
+      status, order_content)
+    values (#{id,jdbcType=INTEGER}, #{orderUser,jdbcType=VARCHAR}, #{orderTime,jdbcType=TIMESTAMP}, 
+      #{payUser,jdbcType=VARCHAR}, #{payTime,jdbcType=TIMESTAMP}, #{amount,jdbcType=DECIMAL}, 
+      #{status,jdbcType=TINYINT}, #{orderContent,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.swinginwind.xql.pay.entity.BaseOrder" >
+    insert into base_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderUser != null" >
+        order_user,
+      </if>
+      <if test="orderTime != null" >
+        order_time,
+      </if>
+      <if test="payUser != null" >
+        pay_user,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="orderContent != null" >
+        order_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderUser != null" >
+        #{orderUser,jdbcType=VARCHAR},
+      </if>
+      <if test="orderTime != null" >
+        #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payUser != null" >
+        #{payUser,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="orderContent != null" >
+        #{orderContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.swinginwind.xql.pay.entity.BaseOrder" >
+    update base_order
+    <set >
+      <if test="orderUser != null" >
+        order_user = #{orderUser,jdbcType=VARCHAR},
+      </if>
+      <if test="orderTime != null" >
+        order_time = #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payUser != null" >
+        pay_user = #{payUser,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="orderContent != null" >
+        order_content = #{orderContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.swinginwind.xql.pay.entity.BaseOrder" >
+    update base_order
+    set order_user = #{orderUser,jdbcType=VARCHAR},
+      order_time = #{orderTime,jdbcType=TIMESTAMP},
+      pay_user = #{payUser,jdbcType=VARCHAR},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      amount = #{amount,jdbcType=DECIMAL},
+      status = #{status,jdbcType=TINYINT},
+      order_content = #{orderContent,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.swinginwind.xql.pay.entity.BaseOrder" >
+    update base_order
+    set order_user = #{orderUser,jdbcType=VARCHAR},
+      order_time = #{orderTime,jdbcType=TIMESTAMP},
+      pay_user = #{payUser,jdbcType=VARCHAR},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      amount = #{amount,jdbcType=DECIMAL},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

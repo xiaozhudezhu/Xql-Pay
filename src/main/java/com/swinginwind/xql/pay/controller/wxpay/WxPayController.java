@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
@@ -35,6 +36,7 @@ import com.jpay.weixin.api.WxPayApi;
 import com.jpay.weixin.api.WxPayApi.TradeType;
 import com.jpay.weixin.api.WxPayApiConfig;
 import com.jpay.weixin.api.WxPayApiConfig.PayModel;
+import com.swinginwind.xql.pay.entity.BaseOrder;
 import com.swinginwind.xql.pay.entity.BaseProduct;
 import com.swinginwind.xql.pay.entity.H5ScencInfo;
 import com.swinginwind.xql.pay.entity.PayRecord;
@@ -45,6 +47,7 @@ import com.swinginwind.xql.pay.entity.H5ScencInfo.H5;
 import com.swinginwind.xql.pay.mapper.BaseProductMapper;
 import com.swinginwind.xql.pay.mapper.PayRecordMapper;
 import com.swinginwind.xql.pay.mapper.RefundRecordMapper;
+import com.swinginwind.xql.pay.service.OrderService;
 import com.swinginwind.xql.pay.service.UserService;
 import com.swinginwind.xql.wechat.config.WechatMpProperties;
 import com.jpay.weixin.api.WxPayApiConfigKit;
@@ -75,6 +78,9 @@ public class WxPayController extends WxPayApiController {
 	
 	@Autowired
 	private RefundRecordMapper refundRecordMapper;
+	
+	@Autowired
+	private OrderService orderService;
 	
 
 	@Override
@@ -238,31 +244,30 @@ public class WxPayController extends WxPayApiController {
 	@RequestMapping(value = "/scanCode1", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public AjaxResult scanCode1(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("productId") String product_id) {
+			String orderId) {
 		AjaxResult result = new AjaxResult();
 		try {
-			if (StrKit.isBlank(product_id)) {
-				result.addError("productId is null");
+			if(StringUtils.isEmpty(orderId)) {
+				result.addError("参数异常");
 				return result;
 			}
 			WxPayApiConfig config = WxPayApiConfigKit.getWxPayApiConfig();
 			// 获取扫码支付（模式一）url
-			TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
-			String productInfo = product_id;
-			if(member != null)
-				productInfo += "_" + member.getUserid();
-			String qrCodeUrl = WxPayApi.getCodeUrl(config.getAppId(), config.getMchId(), productInfo,
+			String qrCodeUrl = WxPayApi.getCodeUrl(config.getAppId(), config.getMchId(), orderId,
 					config.getPaternerKey(), true);
 			log.info(qrCodeUrl);
 			// 生成二维码保存的路径
 
-			String name = "payQRCode1_" + product_id + ".png";
+			String name = "payQRCode1_" + orderId + ".png";
 			System.out.println(request.getServletContext().getRealPath("/") + File.separator + name);
 			Boolean encode = ZxingKit.encode(qrCodeUrl, BarcodeFormat.QR_CODE, 3, ErrorCorrectionLevel.H, "png", 200,
 					200, request.getServletContext().getRealPath("/") + File.separator + name);
 			if (encode) {
 				// 在页面上显示
-				result.success(name);
+				Map<String, Object> res = new HashMap<String, Object>();
+				res.put("url", name);
+				res.put("orderId", orderId);
+				result.success(res);
 				return result;
 			}
 		} catch (Exception e) {
@@ -639,7 +644,7 @@ public class WxPayController extends WxPayApiController {
 		 // 微信支付订单号
 		 String transaction_id = params.get("transaction_id");
 		 // 商户订单号
-		 String out_trade_no = params.get("out_trade_no");
+		 String orderId = params.get("out_trade_no");
 		 // 支付完成时间，格式为yyyyMMddHHmmss
 		 String time_end = params.get("time_end");
 
@@ -658,49 +663,52 @@ public class WxPayController extends WxPayApiController {
 			if (("SUCCESS").equals(result_code)) {
 				// 更新订单信息
 				log.warn("更新订单信息:" + attach);
-				int count = payRecordMapper.getCountByOutTradeNo(out_trade_no);
+				int count = payRecordMapper.getCountByOutTradeNo(orderId);
 				if(count == 0) {
-					PayRecord record = new PayRecord();
-					record.setBuyerId(openId);
-					record.setBuyerName(params.get("buyer_logon_id"));
-					record.setBuyerPayAmount(new BigDecimal(total_fee));
-					record.setOutTradeNo(out_trade_no);
-					record.setPayStatus(result_code);
-					try {
-						record.setPayTime(DateUtils.parseDate(time_end, "yyyyMMddHHmmss"));
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					record.setPayWay("wxpay");
-					if(attach != null) {
-						String[] strArray = attach.replace("学球乐-", "").split("###");
-						record.setProductId(Integer.parseInt(strArray[1]));
-						record.setProductName(strArray[0]);
-						if(strArray.length > 2) {
-							TMembers member = userService.selectByUserId(Integer.parseInt(strArray[2]));
+					BaseOrder order = orderService.selectByPrimaryKey(Integer.parseInt(orderId));
+					if(order == null)
+						log.error("无效的订单" + orderId);
+					else {
+						PayRecord record = new PayRecord();
+						record.setBuyerId(openId);
+						record.setBuyerName(params.get("buyer_logon_id"));
+						record.setBuyerPayAmount(new BigDecimal(total_fee));
+						record.setOutTradeNo(orderId);
+						record.setPayStatus(result_code);
+						try {
+							record.setPayTime(DateUtils.parseDate(time_end, "yyyyMMddHHmmss"));
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if(order.getOrderUser() != null) {
+							TMembers member = userService.selectByUserId(Integer.parseInt(order.getOrderUser()));
 							if(member != null) {
 								record.setUserId(member.getUserid().toString());
 								record.setUserName(member.getName());
 							}
 						}
-
+						record.setProductId(order.getId());
+						record.setProductName("按主题购买");
+						record.setPayWay("wxpay");
+						
+						record.setReceiptAmount(new BigDecimal(total_fee));
+						record.setRecordTime(new Date());
+						record.setSellerId(mch_id);
+						record.setSellerName(mch_id);
+						record.setTotalAmount(new BigDecimal(total_fee).divide(new BigDecimal(100)));
+						record.setTradeNo(transaction_id);
+						//record.setUserId(openId);
+						record.setOutTradeNo(orderId);
+						payRecordMapper.insert(record);
+						BaseOrder order1 = new BaseOrder();
+						order1.setId(record.getProductId());
+						order1.setPayTime(new Date());
+						order1.setPayUser(record.getBuyerId());
+						order1.setStatus((byte) 1);
+						orderService.updateByPrimaryKeySelective(order1);
 					}
 					
-					record.setReceiptAmount(new BigDecimal(total_fee));
-					record.setRecordTime(new Date());
-					record.setSellerId(mch_id);
-					record.setSellerName(mch_id);
-					record.setTotalAmount(new BigDecimal(total_fee).divide(new BigDecimal(100)));
-					record.setTradeNo(transaction_id);
-					//record.setUserId(openId);
-					record.setOutTradeNo(out_trade_no);
-					TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
-					if(member != null) {
-						record.setUserId(member.getUserid().toString());
-						record.setUserName(member.getName());
-					}
-					payRecordMapper.insert(record);
 				}
 				else
 					log.info("重复接收到支付信息");
@@ -851,19 +859,18 @@ public class WxPayController extends WxPayApiController {
 			}
 			ip = "127.0.0.1";
 			String[] productInfos = product_id.split("_");
-			List<BaseProduct> productList = baseProductMapper.getById(Integer.parseInt(productInfos[0]));
-			if(productList.size() == 0) {
+			BaseOrder order = orderService.selectByPrimaryKey(Integer.parseInt(productInfos[0]));
+			if(order == null) {
 				return null;
 			}
-			BaseProduct product = productList.get(0);
 			
-			String attach = "学球乐-" + product.getName() + "###" + product.getId() + "###" + (productInfos.length == 2 ? productInfos[1] : "");
-			String subject = "学球乐-" + product.getName();
-			String totalAmount = product.getAmount().multiply(new BigDecimal(100)).intValue() + "";
+			String attach = "学球乐-按主题购买###" + order.getId() + "###" + (productInfos.length == 2 ? productInfos[1] : "");
+			String subject = "学球乐支付订单";
+			String totalAmount = order.getAmount().multiply(new BigDecimal(100)).intValue() + "";
 			Map<String, String> params = WxPayApiConfigKit.getWxPayApiConfig().setAttach(attach)
 					.setBody(subject).setOpenId(openid).setSpbillCreateIp(ip).setTotalFee(totalAmount)
 					.setTradeType(TradeType.NATIVE).setNotifyUrl(notify_url)
-					.setOutTradeNo(String.valueOf(System.currentTimeMillis())).build();
+					.setOutTradeNo(String.valueOf(order.getId())).build();
 
 			String xmlResult = WxPayApi.pushOrder(false, params);
 			log.info("prepay_xml>>>" + xmlResult);

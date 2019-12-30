@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.druid.util.StringUtils;
@@ -37,18 +35,15 @@ import com.jpay.weixin.api.WxPayApi.TradeType;
 import com.jpay.weixin.api.WxPayApiConfig;
 import com.jpay.weixin.api.WxPayApiConfig.PayModel;
 import com.swinginwind.xql.pay.entity.BaseOrder;
-import com.swinginwind.xql.pay.entity.BaseProduct;
 import com.swinginwind.xql.pay.entity.H5ScencInfo;
 import com.swinginwind.xql.pay.entity.PayRecord;
 import com.swinginwind.xql.pay.entity.RefundRecord;
 import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.entity.WxPayBean;
 import com.swinginwind.xql.pay.entity.H5ScencInfo.H5;
-import com.swinginwind.xql.pay.mapper.BaseProductMapper;
 import com.swinginwind.xql.pay.mapper.PayRecordMapper;
 import com.swinginwind.xql.pay.mapper.RefundRecordMapper;
 import com.swinginwind.xql.pay.service.OrderService;
-import com.swinginwind.xql.pay.service.UserService;
 import com.swinginwind.xql.wechat.config.WechatMpProperties;
 import com.jpay.weixin.api.WxPayApiConfigKit;
 
@@ -68,13 +63,7 @@ public class WxPayController extends WxPayApiController {
 	String notify_url;
 	
 	@Autowired
-	private UserService userService;
-	
-	@Autowired
 	private PayRecordMapper payRecordMapper;
-	
-	@Autowired
-    private BaseProductMapper baseProductMapper;
 	
 	@Autowired
 	private RefundRecordMapper refundRecordMapper;
@@ -628,29 +617,10 @@ public class WxPayController extends WxPayApiController {
 		String xmlMsg = HttpKit.readData(request);
 		System.out.println("支付通知=" + xmlMsg);
 		Map<String, String> params = PaymentKit.xmlToMap(xmlMsg);
-		 String appid = params.get("appid");
-		 //商户号
-		 String mch_id = params.get("mch_id");
 		String result_code = params.get("result_code");
-		 String openId = params.get("openid");
-		 //交易类型
-		 String trade_type = params.get("trade_type");
-		 //付款银行
-		 String bank_type = params.get("bank_type");
-		 // 总金额
-		 String total_fee = params.get("total_fee");
-		 //现金支付金额
-		 String cash_fee = params.get("cash_fee");
-		 // 微信支付订单号
-		 String transaction_id = params.get("transaction_id");
-		 // 商户订单号
-		 String orderId = params.get("out_trade_no");
-		 // 支付完成时间，格式为yyyyMMddHHmmss
-		 String time_end = params.get("time_end");
 
 		///////////////////////////// 以下是附加参数///////////////////////////////////
 
-		String attach = params.get("attach");
 		// String fee_type = params.get("fee_type");
 		// String is_subscribe = params.get("is_subscribe");
 		// String err_code = params.get("err_code");
@@ -662,56 +632,8 @@ public class WxPayController extends WxPayApiController {
 		if (PaymentKit.verifyNotify(params, WxPayApiConfigKit.getWxPayApiConfig().getPaternerKey())) {
 			if (("SUCCESS").equals(result_code)) {
 				// 更新订单信息
-				log.warn("更新订单信息:" + attach);
-				int count = payRecordMapper.getCountByOutTradeNo(orderId);
-				if(count == 0) {
-					BaseOrder order = orderService.selectByPrimaryKey(Integer.parseInt(orderId));
-					if(order == null)
-						log.error("无效的订单" + orderId);
-					else {
-						PayRecord record = new PayRecord();
-						record.setBuyerId(openId);
-						record.setBuyerName(params.get("buyer_logon_id"));
-						record.setBuyerPayAmount(new BigDecimal(total_fee));
-						record.setOutTradeNo(orderId);
-						record.setPayStatus(result_code);
-						try {
-							record.setPayTime(DateUtils.parseDate(time_end, "yyyyMMddHHmmss"));
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						if(order.getOrderUser() != null) {
-							TMembers member = userService.selectByUserId(Integer.parseInt(order.getOrderUser()));
-							if(member != null) {
-								record.setUserId(member.getUserid().toString());
-								record.setUserName(member.getName());
-							}
-						}
-						record.setProductId(order.getId());
-						record.setProductName("按主题购买");
-						record.setPayWay("wxpay");
-						
-						record.setReceiptAmount(new BigDecimal(total_fee));
-						record.setRecordTime(new Date());
-						record.setSellerId(mch_id);
-						record.setSellerName(mch_id);
-						record.setTotalAmount(new BigDecimal(total_fee).divide(new BigDecimal(100)));
-						record.setTradeNo(transaction_id);
-						//record.setUserId(openId);
-						record.setOutTradeNo(orderId);
-						payRecordMapper.insert(record);
-						BaseOrder order1 = new BaseOrder();
-						order1.setId(record.getProductId());
-						order1.setPayTime(new Date());
-						order1.setPayUser(record.getBuyerId());
-						order1.setStatus((byte) 1);
-						orderService.updateByPrimaryKeySelective(order1);
-					}
-					
-				}
-				else
-					log.info("重复接收到支付信息");
+				log.warn("更新订单信息:" + params);
+				orderService.wxPayNotify(params);
 				// 发送通知等
 				Map<String, String> xml = new HashMap<String, String>();
 				xml.put("return_code", "SUCCESS");

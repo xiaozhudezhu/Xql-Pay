@@ -5,6 +5,10 @@ import java.util.List;
 
 public class VideoPermissionForm {
 	
+	private Integer operateUserId;
+	
+	private String operateUserName;
+	
 	private int configType;
 	
 	private Date startDate;
@@ -53,6 +57,34 @@ public class VideoPermissionForm {
 
 	public void setPermissionList(List<VideoPermission> permissionList) {
 		this.permissionList = permissionList;
+	}
+
+	/**
+	 * @return the operateUserId
+	 */
+	public Integer getOperateUserId() {
+		return operateUserId;
+	}
+
+	/**
+	 * @param operateUserId the operateUserId to set
+	 */
+	public void setOperateUserId(Integer operateUserId) {
+		this.operateUserId = operateUserId;
+	}
+
+	/**
+	 * @return the operateUserName
+	 */
+	public String getOperateUserName() {
+		return operateUserName;
+	}
+
+	/**
+	 * @param operateUserName the operateUserName to set
+	 */
+	public void setOperateUserName(String operateUserName) {
+		this.operateUserName = operateUserName;
 	}
 
 }

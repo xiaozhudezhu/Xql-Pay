@@ -176,7 +176,7 @@ public class WxPayController extends WxPayApiController {
 	@RequestMapping(value = "/webPay", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public AjaxResult webPay(HttpServletRequest request, HttpServletResponse response,
-			PayRecord payRecord) {
+			String orderId) {
 		AjaxResult result = new AjaxResult();
 		// openId，采用 网页授权获取 access_token API：SnsAccessTokenApi获取
 		String openId = (String) request.getSession().getAttribute("openId");
@@ -192,14 +192,18 @@ public class WxPayController extends WxPayApiController {
 			ip = "127.0.0.1";
 		}
 		ip = "127.0.0.1";
-		TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
-		String attach = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + (member != null ? member.getUserid() : "");
-		String subject = "学球乐-" + payRecord.getProductName();
-		String totalAmount = payRecord.getTotalAmount().toString();
+		BaseOrder order = orderService.selectByPrimaryKey(Integer.parseInt(orderId));
+		if(order == null) {
+			return null;
+		}
+		
+		String attach = "学球乐-按主题购买";
+		String subject = "学球乐支付订单";
+		String totalAmount = order.getAmount().multiply(new BigDecimal(100)).intValue() + "";
 		Map<String, String> params = WxPayApiConfigKit.getWxPayApiConfig().setAttach(attach)
 				.setBody(subject).setOpenId(openId).setSpbillCreateIp(ip).setTotalFee(totalAmount)
 				.setTradeType(TradeType.JSAPI).setNotifyUrl(notify_url)
-				.setOutTradeNo(String.valueOf(System.currentTimeMillis())).build();
+				.setOutTradeNo(orderId).build();
 
 		String xmlResult = WxPayApi.pushOrder(false, params);
 		log.info(xmlResult);

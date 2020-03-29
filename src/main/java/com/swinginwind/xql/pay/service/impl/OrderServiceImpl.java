@@ -1,8 +1,13 @@
 package com.swinginwind.xql.pay.service.impl;
 
+import static org.mockito.Matchers.intThat;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -11,13 +16,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.swinginwind.xql.pay.entity.BaseOrder;
 import com.swinginwind.xql.pay.entity.PayRecord;
 import com.swinginwind.xql.pay.entity.TMembers;
+import com.swinginwind.xql.pay.entity.VideoPermission;
+import com.swinginwind.xql.pay.entity.VideoPermissionForm;
 import com.swinginwind.xql.pay.mapper.BaseOrderMapper;
 import com.swinginwind.xql.pay.mapper.PayRecordMapper;
 import com.swinginwind.xql.pay.service.OrderService;
 import com.swinginwind.xql.pay.service.UserService;
+import com.swinginwind.xql.pay.service.VideoService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -32,6 +43,9 @@ public class OrderServiceImpl implements OrderService {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private VideoService videoService;
 
 	@Override
 	public int deleteByPrimaryKey(Integer id) {
@@ -107,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
 					e.printStackTrace();
 				}
 				if (order.getOrderUser() != null) {
-					TMembers member = userService.selectByUserId(Integer.parseInt(order.getOrderUser()));
+					TMembers member = userService.selectByUserId(order.getOrderUser());
 					if (member != null) {
 						record.setUserId(member.getUserid().toString());
 						record.setUserName(member.getName());
@@ -132,11 +146,61 @@ public class OrderServiceImpl implements OrderService {
 				order1.setPayUser(record.getBuyerId());
 				order1.setStatus((byte) 1);
 				orderMapper.updateByPrimaryKeySelective(order1);
+				this.updateVideoPermission(order);
 				return true;
 			}
 		} else
 			log.info("重复接收到支付信息");
 		return false;
+	}
+	
+	public void updateVideoPermission(BaseOrder order) {
+		VideoPermissionForm form = new VideoPermissionForm();
+		List<Integer> userIdList = new ArrayList<Integer>();
+		userIdList.add(order.getOrderUser());
+		form.setUserIdList(userIdList);
+		
+		List<VideoPermission> allowedPermissionList = videoService.selectVideoPermissionByUserId(order.getOrderUser());
+		Map<Integer, VideoPermission> allowedPermissionMap = new HashMap<Integer, VideoPermission>();
+		if(allowedPermissionList.size() > 0) {
+			for(VideoPermission p : allowedPermissionList) {
+				if(p.getDueDate() == null || p.getDueDate().after(new Date()))
+					allowedPermissionMap.put(p.getVideoId(), p);
+			}
+		}
+		String orderContent = order.getOrderContent();
+		JSONObject object = JSON.parseObject(orderContent);
+		JSONArray array = object.getJSONArray("videoTypes");
+		for(int i = 0; i < array.size(); i++) {
+			JSONObject obj = array.getJSONObject(i);
+			Integer fileTypeId = Integer.parseInt(obj.getString("productId"));
+			VideoPermission p = allowedPermissionMap.get(fileTypeId);
+			if(p == null) {
+				p = new VideoPermission();
+				allowedPermissionMap.put(fileTypeId, p);
+				p.setStartDate(new Date());
+				p.setDueDate(DateUtils.addMonths(p.getStartDate(), 3));
+				p.setOperateTime(new Date());
+				p.setOperateUserId(0);
+				p.setOperateUserName("系统管理员");
+				p.setOrderId(order.getId());
+				p.setVideoId(fileTypeId);
+			}
+			else if(p.getDueDate() != null) {
+				p.setDueDate(DateUtils.addMonths(p.getDueDate(), 3));
+				p.setOperateTime(new Date());
+				p.setOperateUserId(0);
+				p.setOperateUserName("系统管理员");
+				p.setOrderId(order.getId());
+				p.setVideoId(fileTypeId);
+			}
+		}
+		List<VideoPermission> permissionList = new ArrayList<VideoPermission>();
+		for(Integer key : allowedPermissionMap.keySet()) {
+			permissionList.add(allowedPermissionMap.get(key));
+		}
+		form.setPermissionList(permissionList);
+		videoService.submitVideoPermission(form);
 	}
 
 }

@@ -78,6 +78,11 @@ public class VideoServiceImpl implements VideoService {
 		videoPermissionMapper.deleteByUserIds(form.getUserIdList());
 		for(int userId : form.getUserIdList()) {
 			for(VideoPermission permission : form.getPermissionList()) {
+				if(form.getOperateUserId() != null) {
+					permission.setOperateUserId(form.getOperateUserId());
+					permission.setOperateUserName(form.getOperateUserName());
+					permission.setOperateTime(new Date());
+				}
 				permission.setUserId(userId);
 				if(form.getConfigType() == 2) {
 					permission.setStartDate(form.getStartDate());

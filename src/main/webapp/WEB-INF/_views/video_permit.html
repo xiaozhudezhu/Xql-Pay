@@ -223,6 +223,7 @@
 		else
 			znode.name += '无限期]';
 		znode.name += '】';
+		znode.name += '【由' + item.operateUserName + '于' + item.operateTime + '授权】';
 		ztree.updateNode(znode);
 	}
 	
@@ -257,7 +258,7 @@
 		var nodes = $.fn.zTree.getZTreeObj('videoTree').getCheckedNodes();
 		if(nodes.length > 0) {
 			$.each(nodes, function(i, node) {
-				if(node.type == 'F') {
+				if(node.type == 'T' && !node.children) {
 					var vp = {
 						videoId: node.id,
 						startDate: node.startDate,

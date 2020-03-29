@@ -34,7 +34,7 @@ public class BaseOrderController {
 		}
 		TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
 		if(member != null)
-			order.setOrderUser(member.getUserid().toString());
+			order.setOrderUser(member.getUserid());
 		order.setOrderTime(new Date());
 		order.setStatus((byte) 0);
 		orderService.insert(order);

@@ -8,9 +8,12 @@
     <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
     <result column="due_date" property="dueDate" jdbcType="TIMESTAMP" />
     <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="operate_user_id" property="operateUserId" jdbcType="INTEGER" />
+    <result column="operate_user_name" property="operateUserName" jdbcType="VARCHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, video_id, start_date, due_date, order_id
+    id, user_id, video_id, start_date, due_date, order_id, operate_user_id, operate_user_name, operate_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -118,13 +121,13 @@
   </delete>
   <insert id="insertBatch">
   insert into video_permission (id, user_id, video_id, 
-      start_date, due_date, order_id
+      start_date, due_date, order_id, operate_user_id, operate_user_name, operate_time
       )
     values 
     <foreach collection="list" item="item" index="index" separator=",">
     (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.videoId,jdbcType=INTEGER}, 
       #{item.startDate,jdbcType=TIMESTAMP}, #{item.dueDate,jdbcType=TIMESTAMP}, #{item.orderId,jdbcType=INTEGER}
-      )
+      , #{item.operateUserId,jdbcType=INTEGER}, #{item.operateUserName,jdbcType=VARCHAR}, #{item.operateTime,jdbcType=TIMESTAMP})
       </foreach>
   </insert>
 </mapper>

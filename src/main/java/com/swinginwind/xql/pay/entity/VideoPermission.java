@@ -52,8 +52,24 @@ public class VideoPermission {
      * 对应字段 : order_id
      */
     private Integer orderId;
+    
+    private Integer operateUserId;
+    
+    private String operateUserName;
+    
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    private Date operateTime;
 
-    public Integer getId() {
+    public Date getOperateTime() {
+		return operateTime;
+	}
+
+	public void setOperateTime(Date operateTime) {
+		this.operateTime = operateTime;
+	}
+
+	public Integer getId() {
         return id;
     }
 
@@ -100,4 +116,32 @@ public class VideoPermission {
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }
+
+	/**
+	 * @return the operateUserId
+	 */
+	public Integer getOperateUserId() {
+		return operateUserId;
+	}
+
+	/**
+	 * @param operateUserId the operateUserId to set
+	 */
+	public void setOperateUserId(Integer operateUserId) {
+		this.operateUserId = operateUserId;
+	}
+
+	/**
+	 * @return the operateUserName
+	 */
+	public String getOperateUserName() {
+		return operateUserName;
+	}
+
+	/**
+	 * @param operateUserName the operateUserName to set
+	 */
+	public void setOperateUserName(String operateUserName) {
+		this.operateUserName = operateUserName;
+	}
 }

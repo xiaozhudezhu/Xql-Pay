@@ -164,7 +164,7 @@ LEFT JOIN (
 		t2.start_date &lt; sysDate()
 		OR t2.start_date IS NULL
 	)
-) t3 ON t1.id = t3.video_id
+) t3 ON t1.pid = t3.video_id
     where t1.pid = #{pid,jdbcType=INTEGER} order by t1.sort_code
   </select>
   <select id="isVideoFilePermitted" resultType="string" parameterType="java.lang.Integer" >
@@ -174,7 +174,7 @@ LEFT JOIN (
 		video_permission t2
 	WHERE
 		t2.user_id = #{userId}
-	AND t2.video_id = t1.id
+	AND t2.video_id = t1.pid
 	AND (
 		t2.due_date &gt; sysdate()
 		OR t2.due_date IS NULL
@@ -185,20 +185,20 @@ LEFT JOIN (
 	)))
   </select>
   <select id="selectVideoTree" resultType="map" >
-    (SELECT
-	concat('T', id) AS id,
+    SELECT
+	id AS id,
 	name,
-	concat('T', pid) AS pId,
+	pid AS pId,
 	'T' AS type
 	FROM
-		video_type order by sort_code)
-	UNION ALL
+		video_type order by sort_code
+	<!-- UNION ALL
 	(SELECT
 		id,
 		name,
 		concat('T', pid) AS pId,
 		'F' AS type
 	FROM
-		video_file order by sort_code)
+		video_file order by sort_code) -->
   </select>
 </mapper>

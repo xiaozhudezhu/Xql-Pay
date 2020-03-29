@@ -114,10 +114,18 @@ public class VideoController {
 
 	@RequestMapping(value = "/submitVideoPermission", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitVideoPermission(@RequestBody VideoPermissionForm form) {
+	public Map<String, Object> submitVideoPermission(@RequestBody VideoPermissionForm form, HttpServletRequest request) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("status", "success");
-		videoService.submitVideoPermission(form);
+		TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
+		if (memberT != null) {
+			form.setOperateUserId(memberT.getUserid());
+			form.setOperateUserName(memberT.getName());
+			videoService.submitVideoPermission(form);
+		}
+		else {
+			result.put("status", "401");
+		}
 		return result;
 	}
 

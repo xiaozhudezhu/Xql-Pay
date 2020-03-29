@@ -189,7 +189,7 @@
 				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="paySelect">
-			<iframe src="paySelect"
+			<iframe src="video/videoPayPage"
 				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
 		</div>
 	</div>
@@ -270,7 +270,7 @@
 		if (ua.match(/MicroMessenger/i) == 'micromessenger') {
 			top.postMessage({
 				type : 'redirect',
-				url : 'http://pay.xueqiule.com/paySelect'
+				url : 'http://pay.xueqiule.com/video/videoPayPage'
 			}, '*');
 			return false;
 		}

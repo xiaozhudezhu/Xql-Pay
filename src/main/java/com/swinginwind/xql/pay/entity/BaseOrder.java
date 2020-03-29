@@ -16,7 +16,7 @@ public class BaseOrder {
      * 表 : base_order
      * 对应字段 : order_user
      */
-    private String orderUser;
+    private Integer orderUser;
 
     /**
      * 
@@ -68,12 +68,12 @@ public class BaseOrder {
         this.id = id;
     }
 
-    public String getOrderUser() {
+    public Integer getOrderUser() {
         return orderUser;
     }
 
-    public void setOrderUser(String orderUser) {
-        this.orderUser = orderUser == null ? null : orderUser.trim();
+    public void setOrderUser(Integer orderUser) {
+        this.orderUser = orderUser;
     }
 
     public Date getOrderTime() {

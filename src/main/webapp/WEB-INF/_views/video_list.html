@@ -111,7 +111,7 @@
         			$l1.append('<div typeid="' + item1.id + '" class="weui-navbar__item">' + item1.name + '</div>')
         		});
         		$('#tabVideoType1').tab({
-                    defaultIndex: 0,
+                    defaultIndex: location.hash.substr(1),
                     activeClass: 'tab-blue',
                     onToggle: function (index) {
                     	clearVideoFile();

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.swinginwind.xql.pay.config.AppConfig;
 import com.swinginwind.xql.pay.entity.PayRecord;
 import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.service.UserService;
@@ -23,6 +24,9 @@ public class UserPageController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private AppConfig appConfig;
 
 	//获取登录用戶信息
     @RequestMapping(value = "/getCurrentUser", method = RequestMethod.GET)
@@ -31,6 +35,8 @@ public class UserPageController {
     	TMembers member = (TMembers) request.getSession().getAttribute("userInfo");
         if(member != null) {
         	member = userService.selectByUserId(member.getUserid());
+        	boolean isAdmin = appConfig.getAdminIds().contains(member.getUserid());
+        	member.setAdmin(isAdmin);
         }
     	return member;
     }

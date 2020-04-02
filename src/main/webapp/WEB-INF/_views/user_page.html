@@ -42,6 +42,10 @@
 			onclick="return paySelect();">购买产品</a></li>
 		<li role="presentation"><a href="#payRecord"
 			aria-controls="payRecord" role="tab" data-toggle="tab">付款记录</a></li>
+		<li role="presentation" id="videoConfigPageHead" style="display:none;"><a href="#videoConfigPage"
+			aria-controls="payRecord" role="tab" data-toggle="tab">视频配置</a></li>
+		<li role="presentation" id="videoPermitPageHead" style="display:none;""><a href="#videoPermitPage"
+			aria-controls="videoPermitPage" role="tab" data-toggle="tab">视频授权</a></li>
 		<!-- <li role="presentation"><a href="#myClass"
 			aria-controls="myClass" role="tab" data-toggle="tab">我的课程</a></li> -->
 	</ul>
@@ -192,6 +196,14 @@
 			<iframe src="video/videoPayPage"
 				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
 		</div>
+		<div role="tabpanel" class="tab-pane" id="videoConfigPage">
+			<iframe src="video/videoConfigPage"
+				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="videoPermitPage">
+			<iframe src="video/videoPermitPage"
+				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
+		</div>
 	</div>
 </body>
 <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
@@ -222,6 +234,8 @@
 		$('#userInfo_gender').change();
 		//$('#userInfo_gender').bootstrapSwitch('setState', true);
 		$('#userInfo_city').val(userInfo.city).citypicker();
+		if(userInfo.admin)
+			$('#videoPermitPageHead,#videoConfigPageHead').show();
 
 	});
 

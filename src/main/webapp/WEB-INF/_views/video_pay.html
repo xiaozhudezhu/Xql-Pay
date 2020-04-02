@@ -70,7 +70,7 @@ $(document)
 								});
 							});
 
-			if (isWxBrowser()) {
+			if (true || isWxBrowser()) {
 				$('.pay-way li:eq(0)').hide();
 				$('.pay-way a:eq(0)').removeClass(
 						'weui-wepay-pay-select__item_on');
@@ -275,7 +275,7 @@ function onBridgeReady(json) {
 			layer.msg("支付成功", {
 				shift : 6
 			});
-			self.location = "success";
+			self.location = "/success";
 		} else {
 			layer.msg("支付失败", {
 				shift : 6

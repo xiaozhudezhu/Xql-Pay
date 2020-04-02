@@ -139,6 +139,8 @@ public class TMembers {
      * ��Ӧ�ֶ� : Language
      */
     private String language;
+    
+    private boolean isAdmin;
 
     /**
      * 
@@ -317,5 +319,19 @@ public class TMembers {
 
 	public void setLoginToken(String loginToken) {
 		this.loginToken = loginToken;
+	}
+
+	/**
+	 * @return the isAdmin
+	 */
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	/**
+	 * @param isAdmin the isAdmin to set
+	 */
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }

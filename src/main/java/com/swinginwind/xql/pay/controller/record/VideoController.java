@@ -201,9 +201,11 @@ public class VideoController {
 	
 	
 	@RequestMapping(value = "/videoPayPage", method = RequestMethod.GET)
-	public ModelAndView videoPayPage() {
+	public ModelAndView videoPayPage(Integer videoId) {
 		ModelAndView mv = null;
 		mv = new ModelAndView("video_pay.html");
+		if(videoId != null)
+			mv.addObject("video", videoService.selectVideoFileById(videoId));
 		return mv;
 	}
 

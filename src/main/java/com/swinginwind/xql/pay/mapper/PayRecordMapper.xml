@@ -20,6 +20,7 @@
     <result column="pay_status" property="payStatus" jdbcType="VARCHAR" />
     <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
     <result column="record_time" property="recordTime" jdbcType="TIMESTAMP" />
+    <result column="order_content" property="orderContent" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, product_id, product_name, pay_way, trade_no, out_trade_no, user_id, user_name, 
@@ -249,6 +250,7 @@
   <select id="selectByUser" resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />
+    	,(select order_content from base_order where base_order.id=pay_record.out_trade_no) as order_content
     from pay_record
     <if test="userId != null">
     where user_id = #{userId,jdbcType=VARCHAR}

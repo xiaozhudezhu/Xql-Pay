@@ -158,7 +158,14 @@
         				//判断是用户触发，解决滑动时触发的bug
         				if(e.isTrusted) {
         					if($(this).attr('permitted') == '0') {
-        						$.toast('抱歉您没有权限查看该视频', 'forbidden')
+        						$.toast('抱歉您没有权限查看该视频', 'forbidden');
+        						if(window.top == window)
+            						window.open('/video/videoPayPage?videoId=' + $(this).attr('videoid'));
+            					else
+            						top.postMessage({
+            							type : 'videoPay',
+            							videoId : $(this).attr('videoid')
+            						}, '*');
             					return;
             				}
         					if(window.top == window)

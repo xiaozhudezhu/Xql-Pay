@@ -51,6 +51,8 @@ public class PayRecord {
 	
 	private boolean isAdmin;
 	
+	private String orderContent;
+	
 	private int offset;
 	
 	private int limit;
@@ -241,6 +243,20 @@ public class PayRecord {
 
 	public void setAdmin(boolean isAdmin) {
 		this.isAdmin = isAdmin;
+	}
+
+	/**
+	 * @return the orderContent
+	 */
+	public String getOrderContent() {
+		return orderContent;
+	}
+
+	/**
+	 * @param orderContent the orderContent to set
+	 */
+	public void setOrderContent(String orderContent) {
+		this.orderContent = orderContent;
 	}
 	
 	

@@ -50,7 +50,7 @@ $(document)
 									    + 'vertical-align: middle;margin-top: -2px;"> 全选</label></h4>';
 									html += '<ul class="weui-wepay-pay-select__element" price="' + itemP.price + '">';
 									$.each(childrenMap[itemP.id], function(i, item) {
-										html += '<li class="weui-wepay-pay-select__li">'
+										html += '<li class="weui-wepay-pay-select__li" id="product_' + item.id + '">'
 											+ '<a href="javascript:;" class="weui-wepay-pay-select__item'
 											+ '" productId="'
 											+ item.id
@@ -68,6 +68,10 @@ $(document)
 									$(this).children().toggleClass('weui-wepay-pay-select__item_on');
 									reCalculatePrice();
 								});
+								var selectedVideoType = '#(video != null ? video.pid : null)';
+								//console.log('selectedVideoType:' + selectedVideoType);
+								if(selectedVideoType)
+									$('#product_' + selectedVideoType).click();
 							});
 
 			if (true || isWxBrowser()) {

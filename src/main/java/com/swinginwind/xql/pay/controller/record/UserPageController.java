@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.swinginwind.xql.pay.config.AppConfig;
 import com.swinginwind.xql.pay.entity.PayRecord;
@@ -68,9 +71,22 @@ public class UserPageController {
         if(memberT == null || !memberT.getUserid().equals(userId)) {
         	memberT = userService.selectByUserId(userId);
         	request.getSession().setAttribute("userInfo", memberT);
+        	//request.getSession().setAttribute("openId", memberT.getWechatid());
         }
         result.put("status", "success");
 		return result;
+	}
+    
+    @RequestMapping(value = "/checkLogin")
+	public ModelAndView checkLogin(HttpServletRequest request) {
+		ModelAndView mv = null;
+		TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
+		if (memberT != null) {
+			mv = new ModelAndView("blank.html");
+		} else {
+			mv = new ModelAndView("dologin.html");
+		}
+		return mv;
 	}
 	
 }

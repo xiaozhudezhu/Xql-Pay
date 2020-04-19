@@ -389,7 +389,6 @@ public class WxPayController extends WxPayApiController {
 			ip = "127.0.0.1";
 		}
 		ip = "127.0.0.1";
-		WxMpUser user = (WxMpUser) request.getSession().getAttribute("wxUser");
 		String attach = "学球乐-" + payRecord.getProductName() + "###" + payRecord.getProductId() + "###" + "test";
 		String subject = "学球乐-" + payRecord.getProductName();
 		String totalAmount = payRecord.getTotalAmount().toString();

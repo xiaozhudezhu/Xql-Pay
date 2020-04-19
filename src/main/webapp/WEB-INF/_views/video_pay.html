@@ -245,20 +245,24 @@ function wxPayWeb(payWay, payMethod, orderId) {
 		$.hideLoading();
 		if (res.code == 0) {
 			var data = $.parseJSON(res.data);
-			//top.postMessage({ type: 'mpPay', data: data }, '*');
-			if (typeof WeixinJSBridge == "undefined") {
-				if (document.addEventListener) {
-					document.addEventListener('WeixinJSBridgeReady',
-							onBridgeReady(data), false);
-				} else if (document.attachEvent) {
-					document.attachEvent('WeixinJSBridgeReady',
-							onBridgeReady(data));
-					document.attachEvent('onWeixinJSBridgeReady',
-							onBridgeReady(data));
+			if(window.top == window) {
+				if (typeof WeixinJSBridge == "undefined") {
+					if (document.addEventListener) {
+						document.addEventListener('WeixinJSBridgeReady',
+								onBridgeReady(data), false);
+					} else if (document.attachEvent) {
+						document.attachEvent('WeixinJSBridgeReady',
+								onBridgeReady(data));
+						document.attachEvent('onWeixinJSBridgeReady',
+								onBridgeReady(data));
+					}
+				} else {
+					onBridgeReady(data);
 				}
-			} else {
-				onBridgeReady(data);
 			}
+			else
+				top.postMessage({ type: 'mpPay', data: data }, '*');
+			
 		} else {
 			if (res.code == 2) {
 				layer.alert(res.message);

@@ -257,7 +257,7 @@
     </if>
      order by ${sort} ${order},pay_time desc, id desc limit #{offset}, #{limit}
   </select>
-  <select id="selectByUserCount" resultMap="BaseResultMap" >
+  <select id="selectCountByUser" resultType="java.lang.Integer" >
     select count(1)
     from pay_record
     <if test="userId != null">

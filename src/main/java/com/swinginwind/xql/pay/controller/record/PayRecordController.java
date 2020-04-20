@@ -43,7 +43,7 @@ public class PayRecordController {
 				}
 			}
 			result.put("rows", list);
-			result.put("total", payRecordMapper.getCount(payRecord));
+			result.put("total", payRecordMapper.selectCountByUser(payRecord));
 			
 		}
 		return result;

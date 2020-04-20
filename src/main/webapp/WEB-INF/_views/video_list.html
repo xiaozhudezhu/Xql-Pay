@@ -103,32 +103,49 @@
     </style>
 
     <script>
+    	var currentTypeIds = ['', ''];
         $(function() {
+        	//控制视频查看返回后恢复页面
+        	if(sessionStorage.getItem('fromVideoBack') == '1') {
+        		currentTypeIds = sessionStorage.getItem('currentTypeIds').split('-');
+        		sessionStorage.setItem('fromVideoBack', '');
+        	}
+        	else {
+        		currentTypeIds = (location.hash.substr(1) || sessionStorage.getItem('currentTypeIds') || '').split('-');
+            	sessionStorage.setItem('currentTypeIds', currentTypeIds[0] + '-' + currentTypeIds[1]);
+        	}
         	$.get('/video/getVideoTypeByPid', { pid: 0 }, function(list1) {
         		var $l1 = $('#tabVideoType1 .weui-navbar');
         		$l1.html('');
+        		var index1 = 0;
         		$.each(list1, function(i, item1) {
-        			$l1.append('<div typeid="' + item1.id + '" class="weui-navbar__item">' + item1.name + '</div>')
+        			$l1.append('<div typeid="' + item1.id + '" class="weui-navbar__item">' + item1.name + '</div>');
+        			if(item1.id == currentTypeIds[0])
+        				index1 = i;
         		});
         		$('#tabVideoType1').tab({
-                    defaultIndex: location.hash.substr(1),
+                    defaultIndex: index1,
                     activeClass: 'tab-blue',
                     onToggle: function (index) {
                     	clearVideoFile();
     					var pid = $l1.children().eq(index).attr('typeid');
+    					currentTypeIds[0] = pid;
     					$.get('/video/getVideoTypeByPid', { pid: pid }, function(list2) {
     		        		var $l2 = $('#tabVideoType2 .weui-navigator-list');
     		        		$l2.html('');
+    		        		var index2 = 0;
     		        		$.each(list2, function(i, item2) {
-    		        			$l2.append('<li><a href="javascript:loadVideoFile(' + item2.id + ')">' + item2.name + '</a></li>')
+    		        			$l2.append('<li><a href="javascript:loadVideoFile(' + item2.id + ')">' + item2.name + '</a></li>');
+    		        			if(item2.id == currentTypeIds[1])
+    		        				index2 = i;
     		        		});
     		        		if(list2.length > 0) {
     		        			new TagNav('#tabVideoType2', {
             		                type: 'scrollToNext',
             		                curClassName: 'weui-state-active',
-            		                index: 0
+            		                index: index2
             		            });
-    		        			loadVideoFile(list2[0].id);
+    		        			loadVideoFile(list2[index2].id);
     		        		}
     					});
                     }
@@ -137,6 +154,8 @@
         });
         
         function loadVideoFile(pid) {
+        	currentTypeIds[1] = pid;
+        	sessionStorage.setItem('currentTypeIds', currentTypeIds[0] + '-' + currentTypeIds[1]);
         	var $l1 = $('#listVideoFile');
     		$l1.html('');
         	$.get('/video/getVideoFileByPid', { pid: pid }, function(list) {
@@ -168,6 +187,7 @@
             						}, '*');
             					return;
             				}
+        					sessionStorage.setItem('fromVideoBack', '1');
         					if(window.top == window)
         						window.open('/video/play/' + $(this).attr('videoid'));
         					else

@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.swinginwind.xql.pay.entity.VideoType;
 import com.swinginwind.xql.pay.mapper.BaseProductMapper;
+import com.swinginwind.xql.pay.mapper.VideoTypeMapper;
 import com.swinginwind.xql.wechat.utils.JsonUtils;
 
 import me.chanjar.weixin.common.api.WxConsts;
@@ -31,6 +33,8 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 public class IndexController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
+    @Autowired
+	VideoTypeMapper videoTypeMapper;
     
     @Resource
     private BaseProductMapper baseProductMapper;
@@ -123,8 +127,11 @@ public class IndexController {
     
 
     @RequestMapping("/success")
-	public String success() {
-		return "success.html";
+	public ModelAndView success(Integer videoTypeId) {
+    	ModelAndView mv = new ModelAndView("success.html");
+    	VideoType type = videoTypeMapper.selectByPrimaryKey(videoTypeId);
+    	mv.addObject("videoType", type);
+		return mv;
 	}
    
     

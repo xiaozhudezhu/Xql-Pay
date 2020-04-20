@@ -283,7 +283,8 @@ function onBridgeReady(json) {
 			layer.msg("支付成功", {
 				shift : 6
 			});
-			self.location = "/success";
+			var firstType = $('.pay-product .weui-wepay-pay-select__item_on').attr('productid');
+			self.location = "/success?videoTypeId=" + firstType;//跳转到购买的第一个视频
 		} else {
 			layer.msg("支付失败", {
 				shift : 6

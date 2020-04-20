@@ -16,7 +16,8 @@ public interface RefundRecordMapper {
 	@Insert("INSERT INTO refund_record(pay_record_id,refund_amount,refund_reason,refund_status,refund_time,record_time) VALUES(#{payRecordId}, #{refundAmount}, #{refundReason}, #{refundStatus}, #{refundTime}, #{recordTime})")
     void insert(RefundRecord refundRecord);
 	
-	@Select("SELECT t1.*,t2.id as pay_record_id,t2.product_name,t2.pay_way,t2.user_name,t2.total_amount,t2.pay_time FROM refund_record t1, pay_record t2 where t1.pay_record_id=t2.id order by ${sort} ${order},refund_time desc, id desc limit #{offset}, #{limit}")
+	@Select("<script>SELECT t1.*,t2.id as pay_record_id,t2.product_name,t2.pay_way,t2.user_name,t2.total_amount,t2.pay_time FROM refund_record t1, pay_record t2" + 
+			" where t1.pay_record_id=t2.id <if test='userId != null'> and t2.user_id = #{userId,jdbcType=VARCHAR} </if> order by ${sort} ${order},refund_time desc, id desc limit #{offset}, #{limit}</script>")
     @Results({
         @Result(property = "id",  column = "id"),
         @Result(property = "productId", column = "product_id"),
@@ -40,9 +41,9 @@ public interface RefundRecordMapper {
         @Result(property = "refundTime", column = "refund_time"),
         @Result(property = "recordTime", column = "record_time")
     })
-    List<RefundRecord> getAll(RefundRecord record);
+    List<RefundRecord> selectByUser(RefundRecord record);
 	
-	@Select("SELECT count(1) FROM refund_record")
-	int getCount(RefundRecord record);
+	@Select("<script>SELECT count(1) FROM refund_record t1 <if test='userId != null'>, pay_record t2  where t1.pay_record_id=t2.id and t2.user_id = #{userId,jdbcType=VARCHAR} </if></script>")
+	int selectCountByUser(RefundRecord record);
 
 }

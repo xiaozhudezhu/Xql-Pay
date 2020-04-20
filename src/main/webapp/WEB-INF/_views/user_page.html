@@ -39,10 +39,8 @@
 			aria-controls="userInfo" role="tab" data-toggle="tab">个人信息</a></li>
 		<li role="presentation"><a href="#paySelect"
 			aria-controls="paySelect" role="tab" data-toggle="tab">购买产品</a></li>
-		<li role="presentation"><a href="#payRecord"
-			aria-controls="payRecord" role="tab" data-toggle="tab">付款记录</a></li>
-		<li role="presentation" id="refundRecordHead" style="display:none;"><a href="#refundRecord"
-			aria-controls="refundRecord" role="tab" data-toggle="tab">退款记录</a></li>
+		<li role="presentation"><a href="#orderRecord"
+			aria-controls="orderRecord" role="tab" data-toggle="tab">订单记录</a></li>
 		<li role="presentation" id="videoConfigPageHead" style="display:none;"><a href="#videoConfigPage"
 			aria-controls="videoConfigPage" role="tab" data-toggle="tab">视频配置</a></li>
 		<li role="presentation" id="videoPermitPageHead" style="display:none;""><a href="#videoPermitPage"
@@ -188,19 +186,31 @@
 			</form>
 			<br><br>
 		</div>
-		<div role="tabpanel" class="tab-pane" id="myClass">...</div>
-		<div role="tabpanel" class="tab-pane" id="payRecord">
-			<iframe src="payRecord"
-				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
-		</div>
-		<div role="tabpanel" class="tab-pane" id="refundRecord">
-			<iframe src="refundRecord"
-				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
-		</div>
 		<div role="tabpanel" class="tab-pane" id="paySelect">
 			<iframe src="video/videoPayPage"
 				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
 		</div>
+		<div role="tabpanel" class="tab-pane" id="myClass">...</div>
+		<div role="tabpanel" class="tab-pane" id="orderRecord">
+			<ul class="nav nav-tabs" id="tabsOrderRecord" role="tablist"
+				style="z-index: 100; background: white; width: 100%;">
+				<li role="presentation" class="active"><a href="#payRecord"
+					aria-controls="payRecord" role="tab" data-toggle="tab">付款记录</a></li>
+				<li role="presentation"><a href="#refundRecord"
+					aria-controls="refundRecord" role="tab" data-toggle="tab">退款记录</a></li>
+			</ul>
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="payRecord">
+					<iframe src="payRecord"
+						style="width: 100%; height: calc(100% - 100px); border: 0; padding: 5px;"></iframe>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="refundRecord">
+					<iframe src="refundRecord"
+						style="width: 100%; height: calc(100% - 100px); border: 0; padding: 5px;"></iframe>
+				</div>
+			</div>
+		</div>
+		
 		<div role="tabpanel" class="tab-pane" id="videoConfigPage">
 			<iframe src="video/videoConfigPage"
 				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
@@ -240,7 +250,7 @@
 		//$('#userInfo_gender').bootstrapSwitch('setState', true);
 		$('#userInfo_city').val(userInfo.city).citypicker();
 		if(userInfo.admin)
-			$('#videoPermitPageHead,#videoConfigPageHead,#refundRecordHead').show();
+			$('#videoPermitPageHead,#videoConfigPageHead').show();
 
 	});
 

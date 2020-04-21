@@ -15,6 +15,17 @@
 <link rel="stylesheet" href="/static/css/pay.css">
 
 <style>
+.weui-icon_msg {
+	position: absolute;
+	padding: 10px;
+	top: 0px;
+	right: 10px;
+	cursor: pointer;
+	font-size: 18px;
+}
+.weui-wepay-pay-select__li {
+	position: relative;
+}
 
 
 </style>
@@ -52,13 +63,14 @@ $(document)
 									$.each(childrenMap[itemP.id], function(i, item) {
 										html += '<li class="weui-wepay-pay-select__li" id="product_' + item.id + '">'
 											+ '<a href="javascript:;" class="weui-wepay-pay-select__item'
-											+ '" productId="'
+											+ '" pid="' + itemP.id + '" productId="'
 											+ item.id
 											+ '" price="'
 											+ item.price
 											+ '">'
 											+ item.name + ' ¥' + item.price
 											+ '</a>'
+											+ '<i class="weui-icon-info weui-icon_msg"></i>'
 											+ '</li>';
 									});
 									html += '</ul>';
@@ -67,6 +79,18 @@ $(document)
 								$(".pay-product .weui-wepay-pay-select__li").click(function() {
 									$(this).children().toggleClass('weui-wepay-pay-select__item_on');
 									reCalculatePrice();
+								});
+								$(".pay-product .weui-icon-info").click(function() {
+									var $a = $(this).prev();
+									layer.open({
+									  type: 2,
+									  title: '预览视频',
+									  shadeClose: true,
+									  shade: 0.8,
+									  area: ['auto', '95%'],
+									  content: '/video/list#' + $a.attr('pid') + '-' + $a.attr('productId') //iframe的url
+									}); 
+									return false;
 								});
 								var selectedVideoType = '#(video != null ? video.pid : null)';
 								//console.log('selectedVideoType:' + selectedVideoType);
@@ -260,8 +284,10 @@ function wxPayWeb(payWay, payMethod, orderId) {
 					onBridgeReady(data);
 				}
 			}
-			else
-				top.postMessage({ type: 'mpPay', data: data }, '*');
+			else {
+				var firstType = $('.pay-product .weui-wepay-pay-select__item_on').attr('productid');
+				top.postMessage({ type: 'mpPayStart', data: { videoTypeId: firstType, payData: data }}, '*');
+			}
 			
 		} else {
 			if (res.code == 2) {

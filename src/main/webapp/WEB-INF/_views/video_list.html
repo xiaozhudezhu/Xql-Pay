@@ -103,7 +103,7 @@
     </style>
 
     <script>
-    	var currentTypeIds = ['', ''];
+    	var currentTypeIds = ['', '', ''];
         $(function() {
         	//控制视频查看返回后恢复页面
         	if(sessionStorage.getItem('fromVideoBack') == '1') {
@@ -112,7 +112,7 @@
         	}
         	else {
         		currentTypeIds = (location.hash.substr(1) || sessionStorage.getItem('currentTypeIds') || '').split('-');
-            	sessionStorage.setItem('currentTypeIds', currentTypeIds[0] + '-' + currentTypeIds[1]);
+            	sessionStorage.setItem('currentTypeIds', currentTypeIds[0] + '-' + currentTypeIds[1] + '-' + currentTypeIds[2]);
         	}
         	$.get('/video/getVideoTypeByPid', { pid: 0 }, function(list1) {
         		var $l1 = $('#tabVideoType1 .weui-navbar');
@@ -158,11 +158,12 @@
         	sessionStorage.setItem('currentTypeIds', currentTypeIds[0] + '-' + currentTypeIds[1]);
         	var $l1 = $('#listVideoFile');
     		$l1.html('');
+        	$(window).scrollTop(0);
         	$.get('/video/getVideoFileByPid', { pid: pid }, function(list) {
         		$l1.html('');
         		$.each(list, function(i, item) {
         			var $li = $('#videoFileTemplate').clone();
-        			$li.attr('id', '').attr('videoId', item.id);
+        			$li.attr('id', 'videoLi' + item.id).attr('videoId', item.id);
         			$li.find('img').attr('src', '/video/screenshot/' + item.id);
         			$li.find('.weui-mark-title a').html((i+1) + '. ' + item.name);
         			$li.find('.weui-mark-desc').html(item.remark);
@@ -176,6 +177,9 @@
         			$li.click(function(e) {
         				//判断是用户触发，解决滑动时触发的bug
         				if(e.isTrusted) {
+        					currentTypeIds[2] = $(this).attr('videoid');
+        					sessionStorage.setItem('fromVideoBack', '1');
+            	        	sessionStorage.setItem('currentTypeIds', currentTypeIds[0] + '-' + currentTypeIds[1] + '-' + currentTypeIds[2]);
         					if($(this).attr('permitted') == '0') {
         						$.toast('抱歉您没有权限查看该视频', 'forbidden');
         						if(window.top == window)
@@ -187,7 +191,6 @@
             						}, '*');
             					return;
             				}
-        					sessionStorage.setItem('fromVideoBack', '1');
         					if(window.top == window)
         						window.open('/video/play/' + $(this).attr('videoid'));
         					else
@@ -201,6 +204,9 @@
         			$li.show();
         			$l1.append($li);
         		});
+        		var $li = $('#videoLi' + currentTypeIds[2]);
+        		if($li)
+        			$(window).scrollTop($li.offset().top - 120);
         	});
         	return false;
         }

@@ -249,7 +249,7 @@
 		$('#userInfo_gender').change();
 		//$('#userInfo_gender').bootstrapSwitch('setState', true);
 		$('#userInfo_city').val(userInfo.city).citypicker();
-		if(userInfo.admin)
+		if(userInfo.admin && isPc())
 			$('#videoPermitPageHead,#videoConfigPageHead').show();
 
 	});
@@ -303,6 +303,10 @@
 			}, '*');
 			return false;
 		}
+	}
+	
+	function isPc() {
+		return !(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent));
 	}
 
 	function getQueryString(name) {

@@ -17,11 +17,11 @@
 <style>
 .weui-icon_msg {
 	position: absolute;
-	padding: 10px;
+	padding: 12px;
 	top: 0px;
-	right: 10px;
+	right: 8px;
 	cursor: pointer;
-	font-size: 18px;
+	font-size: 16px;
 }
 .weui-wepay-pay-select__li {
 	position: relative;
@@ -133,19 +133,23 @@ function selectAllProduct(e) {
 	var checked = $input.prop('checked');
 	console.log(checked);
 	if(checked)
-		$input.parent().parent().next().find('.weui-wepay-pay-select__item').addClass('weui-wepay-pay-select__item_on');
+		$input.parent().parent().next().find('.weui-wepay-pay-select__item,.weui-icon-info').addClass('weui-wepay-pay-select__item_on');
 	else
-		$input.parent().parent().next().find('.weui-wepay-pay-select__item').removeClass('weui-wepay-pay-select__item_on');
+		$input.parent().parent().next().find('.weui-wepay-pay-select__item,.weui-icon-info').removeClass('weui-wepay-pay-select__item_on');
 	reCalculatePrice();
 }
 
 
 function pay() {
 	var payWay = $('.pay-way .weui-wepay-pay-select__item_on').attr('payWay');
-	var $productSelect = $('.pay-product .weui-wepay-pay-select__item_on');
+	var $productSelect = $('.pay-product .weui-wepay-pay-select__item.weui-wepay-pay-select__item_on');
 	var payMethod = /Android|webOS|iPhone|iPod|BlackBerry/i
 		.test(navigator.userAgent) ? 'wapPay' : 'pcPay';
 	var totalAmount = $('#totalPriceDom').text();
+	if(totalAmount <= 0) {
+		layer.alert('请至少购买一个收费视频课程！');
+		return;
+	}
 	var orderContent = { videoTypes: [] };
 	$productSelect.each(function(i, item) {
 		orderContent.videoTypes.push({ productId: $(item).attr('productid'), price: $(item).attr('price'),

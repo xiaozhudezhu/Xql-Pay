@@ -80,6 +80,15 @@ $(document)
 									$(this).children().toggleClass('weui-wepay-pay-select__item_on');
 									reCalculatePrice();
 								});
+								$(".pay-offline .weui-wepay-pay-select__li").click(function() {
+									if($(this).children().hasClass('weui-wepay-pay-select__item_on'))
+										$(this).children().toggleClass('weui-wepay-pay-select__item_on')
+									else {
+										$(".pay-offline .weui-wepay-pay-select__item_on").toggleClass('weui-wepay-pay-select__item_on');
+										$(this).children().toggleClass('weui-wepay-pay-select__item_on');
+									}
+									reCalculatePrice();
+								});
 								$(".pay-product .weui-icon-info").click(function() {
 									var $a = $(this).prev();
 									layer.open({
@@ -111,7 +120,7 @@ $(document)
 
 function reCalculatePrice() {
 	var totalAmount = 0;
-	$('.pay-product .weui-wepay-pay-select__element').each(function(i, ul) {
+	$('.pay-product .weui-wepay-pay-select__element,.pay-offline .weui-wepay-pay-select__element').each(function(i, ul) {
 		var totalAmountPart = 0, selectAll = true;
 		$(ul).find('.weui-wepay-pay-select__item').each(function(j, a) {
 			var price = parseFloat($(a).attr('price'));
@@ -143,6 +152,7 @@ function selectAllProduct(e) {
 function pay() {
 	var payWay = $('.pay-way .weui-wepay-pay-select__item_on').attr('payWay');
 	var $productSelect = $('.pay-product .weui-wepay-pay-select__item.weui-wepay-pay-select__item_on');
+	var $offlineSelect = $('.pay-offline .weui-wepay-pay-select__item.weui-wepay-pay-select__item_on');
 	var payMethod = /Android|webOS|iPhone|iPod|BlackBerry/i
 		.test(navigator.userAgent) ? 'wapPay' : 'pcPay';
 	var totalAmount = $('#totalPriceDom').text();
@@ -150,9 +160,14 @@ function pay() {
 		layer.alert('请至少购买一个收费视频课程！');
 		return;
 	}
-	var orderContent = { videoTypes: [] };
+	var orderContent = { videoTypes: [], offlines: [] };
 	$productSelect.each(function(i, item) {
 		orderContent.videoTypes.push({ productId: $(item).attr('productid'), price: $(item).attr('price'),
+			name: $(item).text() 
+		});
+	});
+	$offlineSelect.each(function(i, item) {
+		orderContent.offlines.push({ productId: $(item).attr('productid'), price: $(item).attr('price'),
 			name: $(item).text() 
 		});
 	});
@@ -351,8 +366,26 @@ function wxPayWap(payWay, payMethod, orderId) {
 		</div>
 		<div class="weui-wepay-pay-select__bd pay-product">
 		</div>
+		<div class="weui-wepay-pay-select__bd pay-offline">
+			<h4>
+				线下课程
+			</h4>
+			<ul class="weui-wepay-pay-select__element" price="">
+				<li class="weui-wepay-pay-select__li" id="offline_1"><a
+					href="javascript:;" class="weui-wepay-pay-select__item"
+					productid="1" price="0.01">1堂课 ¥200</a></li>
+				<li class="weui-wepay-pay-select__li" id="offline_2"><a
+					href="javascript:;" class="weui-wepay-pay-select__item"
+					productid="2" price="1300">10堂课 ¥1300</a></li>
+				<li class="weui-wepay-pay-select__li" id="offline_3"><a
+					href="javascript:;" class="weui-wepay-pay-select__item"
+					productid="3" price="2000">20堂课 ¥2000</a></li>
+			</ul>
+		</div>
+		
+
 		<div class="weui-wepay-pay-select__hd">
-			有效期：3个月
+			有效期：2年
 		</div>
 		<div class="weui-wepay-pay-select__hd">
 			<p class="weui-wepay-pay-select__info">选择付款方式</p>

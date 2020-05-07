@@ -154,7 +154,7 @@
 							<label class="col-sm-3 control-label">购买课程：</label> 
 							<div class="col-sm-8">
 								<p class="form-control-static" id="detailOrderContent"></p>
-								（有效期为付款时间后三个月）
+								（有效期为付款时间后2年）
 							</div>
 						</div>
 						<input type="hidden" class="form-control" id="detailPayRecordId">
@@ -224,9 +224,16 @@
 		$('#detailAmount').val(row.totalAmount);
 		var orderContentHtml = '';
 		if(row.orderContent) {
-			var types = JSON.parse(row.orderContent).videoTypes;
+			var orderContent = JSON.parse(row.orderContent);
+			var types = orderContent.videoTypes;
+			orderContentHtml += '视频课程：<br>';
 			$.each(types, function(i, type) {
 				orderContentHtml += (i + 1) + '. ' + type.name + '<br>';
+			});
+			var offlines = orderContent.offlines;
+			orderContentHtml += '线下课程：<br>';
+			$.each(offlines, function(i, offline) {
+				orderContentHtml += (i + 1) + '. ' + offline.name + '<br>';
 			});
 		}
 		$('#detailOrderContent').html(orderContentHtml);

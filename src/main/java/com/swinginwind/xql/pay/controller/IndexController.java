@@ -125,6 +125,11 @@ public class IndexController {
     	return "user_page.html";
     }
     
+    @RequestMapping(value = "/scancode")
+    public String scancode(){
+    	return "scancode.html";
+    }
+    
 
     @RequestMapping("/success")
 	public ModelAndView success(Integer videoTypeId) {

@@ -1,11 +1,10 @@
 package com.swinginwind.xql.wechat.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,16 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.jpay.vo.AjaxResult;
 import com.swinginwind.xql.pay.config.AppConfig;
-import com.swinginwind.xql.pay.entity.LoginRecord;
 import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.entity.WxPayBean;
-import com.swinginwind.xql.pay.mapper.LoginRecordMapper;
 import com.swinginwind.xql.pay.service.UserService;
 
 import me.chanjar.weixin.common.api.WxConsts;
+import me.chanjar.weixin.common.bean.WxJsapiSignature;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -91,7 +89,7 @@ public class WechatController {
     }
     
     
-  //微信回调时访问的地址  这里获得code和之前所设置的returnUrl
+    //微信回调时访问的地址  这里获得code和之前所设置的returnUrl
     @GetMapping("/userInfoMp")
     public String userInfoMp(HttpServletRequest request, @RequestParam("code") String code,
                            @RequestParam("state") String returnUrl) {
@@ -244,5 +242,25 @@ public class WechatController {
 
         return null;
     }
+    
+    /**
+	 * 获取api签名信息
+	 */
+	@RequestMapping(value = "/createJsapiSignature", method = { RequestMethod.GET })
+	@ResponseBody
+	public AjaxResult createJsapiSignature(HttpServletRequest request, HttpServletResponse response) {
+		AjaxResult result = new AjaxResult();
+		WxJsapiSignature sign;
+		try {
+			sign = wxMpService.createJsapiSignature(request.getHeader("Referer"));
+			result.success(sign);
+		} catch (WxErrorException e) {
+			e.printStackTrace();
+			result.addError("api签名获取失败");
+		}
+		
+		return result;
+	}
+	
 
 }

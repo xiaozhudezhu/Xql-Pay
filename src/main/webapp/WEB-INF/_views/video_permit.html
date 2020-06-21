@@ -112,11 +112,12 @@
 <script
 	src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
 <script src="/static/zTree/jquery.ztree.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<script src="/static/js/moment-with-locales.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
 <script src="/static/layer/layer.js"></script>
 <script type="text/javascript">
 	
+	var updateTreeNodeFlag = true;
 	function formatUserStatus(value, record) {
 		return value == 'Y' ? '<div class="bg-success">已注册</div>' : '<div class="bg-danger">未注册</div>';
 	}
@@ -149,8 +150,10 @@
 	            	onClick: function(e, treeId, node) {
 	            		if(configType != 1)
 	                		return;
-	            		$('#datetimepicker1 input').val(node.startDate);
-	            		$('#datetimepicker2 input').val(node.dueDate);
+	            		updateTreeNodeFlag = false;
+	            		$("#datetimepicker1").datetimepicker('date', node.startDate || null);
+	            		$("#datetimepicker2").datetimepicker('date', node.dueDate || null);
+	            		updateTreeNodeFlag = true;
 	            	}
 	            }
 	        };
@@ -167,8 +170,10 @@
 	}
 	
 	function recoverVideoTree() {
-		$('#datetimepicker1 input').val('');
-		$('#datetimepicker2 input').val('');
+		updateTreeNodeFlag = false;
+		$("#datetimepicker1").datetimepicker('date', null);
+		$("#datetimepicker2").datetimepicker('date', null);
+		updateTreeNodeFlag = true;
 		var ztree = $.fn.zTree.getZTreeObj('videoTree');
 		ztree.checkAllNodes(false);
 		ztree.cancelSelectedNode(ztree.getSelectedNodes()[0]);
@@ -189,6 +194,7 @@
 	$('#userTable').on('click-row.bs.table', function (e, row, $element) {
 		if(configType != 1)
     		return;
+		$('#userTable').bootstrapTable('uncheckBy', {field : 'userid', values : [ row.userid ]});
 		recoverVideoTree();
         var userId = row.userid;
         $.get('/video/videoPermission', { userId : userId }, function(list) {
@@ -223,7 +229,8 @@
 		else
 			znode.name += '无限期]';
 		znode.name += '】';
-		znode.name += '【由' + item.operateUserName + '于' + item.operateTime + '授权】';
+		if(item.operateUserName && item.operateTime)
+			znode.name += '【由' + item.operateUserName + '于' + item.operateTime + '授权】';
 		ztree.updateNode(znode);
 	}
 	
@@ -287,7 +294,7 @@
         format: 'YYYY-MM-DD',
         locale: moment.locale('zh-cn')
     }).on('dp.change', function(e) {
-    	if(configType != 1)
+    	if(configType != 1 || !updateTreeNodeFlag)
     		return;
     	var ztree = $.fn.zTree.getZTreeObj('videoTree');
     	var znode = ztree.getSelectedNodes()[0];

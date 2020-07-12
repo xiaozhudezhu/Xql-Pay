@@ -88,15 +88,24 @@ public class VideoController {
 	}
 
 	@RequestMapping(value = "/videoPermitPage", method = RequestMethod.GET)
-	public ModelAndView videoPermitPage() {
+	public ModelAndView videoPermitPage(HttpServletRequest request) {
 		ModelAndView mv = null;
-		mv = new ModelAndView("video_permit.html");
+		TMembers userInfo = (TMembers) request.getSession().getAttribute("userInfo");
+		if(userInfo == null || !appConfig.getAdminIds().contains(userInfo.getUserid())) {
+			mv = new ModelAndView("/error/401.html");;
+		}
+		else
+			mv = new ModelAndView("video_permit.html");
 		return mv;
 	}
 
 	@RequestMapping(value = "/userList", method = RequestMethod.GET)
 	@ResponseBody
-	public List<TMembers> userList() {
+	public List<TMembers> userList(HttpServletRequest request) {
+		TMembers userInfo = (TMembers) request.getSession().getAttribute("userInfo");
+		if(userInfo == null || !appConfig.getAdminIds().contains(userInfo.getUserid())) {
+			return null;
+		}
 		return userService.select(new TMembers());
 	}
 
@@ -108,7 +117,11 @@ public class VideoController {
 
 	@RequestMapping(value = "/videoPermission", method = RequestMethod.GET)
 	@ResponseBody
-	public List<VideoPermission> videoPermission(int userId) {
+	public List<VideoPermission> videoPermission(int userId, HttpServletRequest request) {
+		TMembers userInfo = (TMembers) request.getSession().getAttribute("userInfo");
+		if(userInfo == null || !appConfig.getAdminIds().contains(userInfo.getUserid())) {
+			return null;
+		}
 		return videoService.selectVideoPermissionByUserId(userId);
 	}
 
@@ -118,7 +131,7 @@ public class VideoController {
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("status", "success");
 		TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
-		if (memberT != null) {
+		if (memberT != null && appConfig.getAdminIds().contains(memberT.getUserid())) {
 			form.setOperateUserId(memberT.getUserid());
 			form.setOperateUserName(memberT.getName());
 			videoService.submitVideoPermission(form);
@@ -130,9 +143,14 @@ public class VideoController {
 	}
 
 	@RequestMapping(value = "/videoConfigPage", method = RequestMethod.GET)
-	public ModelAndView videoConfigPage() {
+	public ModelAndView videoConfigPage(HttpServletRequest request) {
 		ModelAndView mv = null;
-		mv = new ModelAndView("video_config.html");
+		TMembers userInfo = (TMembers) request.getSession().getAttribute("userInfo");
+		if(userInfo == null || !appConfig.getAdminIds().contains(userInfo.getUserid())) {
+			mv = new ModelAndView("/error/401.html");;
+		}
+		else
+			mv = new ModelAndView("video_config.html");
 		return mv;
 	}
 
@@ -145,31 +163,34 @@ public class VideoController {
 	@RequestMapping(value = "/saveVideoFile", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> saveVideoFile(VideoFile videoFile, HttpServletRequest request) {
-		Integer userId = null;
 		Map<String, Object> result = new HashMap<String, Object>();
-
 		TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
-		if (memberT != null)
-			userId = memberT.getUserid();
-		try {
-			videoService.saveVideoFile(videoFile, userId);
-			result.put("status", "success");
-		} catch (IOException e) {
-			result.put("status", "fail");
+		if (memberT != null && appConfig.getAdminIds().contains(memberT.getUserid())) {
+			Integer userId = memberT.getUserid();
+			try {
+				videoService.saveVideoFile(videoFile, userId);
+				result.put("status", "success");
+			} catch (IOException e) {
+				result.put("status", "fail");
+			}
 		}
+		else
+			result.put("status", "401");
 		return result;
 	}
 	
 	@RequestMapping(value = "/deleteVideoFile", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> deleteVideoFile(String ids, HttpServletRequest request) {
-		Integer userId = null;
 		Map<String, Object> result = new HashMap<String, Object>();
 		TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
-		if (memberT != null)
-			userId = memberT.getUserid();
-		videoService.deleteVideoFile(ids);
-		result.put("status", "success");
+		if (memberT != null && appConfig.getAdminIds().contains(memberT.getUserid())) {
+			videoService.deleteVideoFile(ids);
+			result.put("status", "success");
+		}
+		else {
+			result.put("status", "401");
+		}
 		return result;
 	}
 

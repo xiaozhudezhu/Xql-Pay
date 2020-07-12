@@ -34,6 +34,7 @@ import com.jpay.weixin.api.WxPayApi;
 import com.jpay.weixin.api.WxPayApi.TradeType;
 import com.jpay.weixin.api.WxPayApiConfig;
 import com.jpay.weixin.api.WxPayApiConfig.PayModel;
+import com.swinginwind.xql.pay.config.AppConfig;
 import com.swinginwind.xql.pay.entity.BaseOrder;
 import com.swinginwind.xql.pay.entity.H5ScencInfo;
 import com.swinginwind.xql.pay.entity.PayRecord;
@@ -59,6 +60,9 @@ public class WxPayController extends WxPayApiController {
 
 	@Autowired
 	WechatMpProperties wechatMpProperties;
+	
+	@Autowired
+	private AppConfig appConfig;
 
 	String notify_url;
 	
@@ -573,7 +577,12 @@ public class WxPayController extends WxPayApiController {
 	 */
 	@RequestMapping(value = "/tradeRefund")
 	@ResponseBody
-	public String tradeRefund(RefundRecord refundRecord) {
+	public String tradeRefund(RefundRecord refundRecord, HttpServletRequest request) {
+		TMembers userInfo = (TMembers) request.getSession().getAttribute("userInfo");
+		if(userInfo == null || !appConfig.getAdminIds().contains(userInfo.getUserid())) {
+			log.error("非法操作 tradeRefund！");
+			return "fail";
+		}
 		Map<String, String> packageParams = new HashMap<String, String>();
 		packageParams.put("appid", WxPayApiConfigKit.getWxPayApiConfig().getAppId());
 		packageParams.put("mch_id", WxPayApiConfigKit.getWxPayApiConfig().getMchId());

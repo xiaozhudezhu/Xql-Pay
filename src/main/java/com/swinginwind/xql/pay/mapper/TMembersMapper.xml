@@ -273,6 +273,12 @@
     from tsports.tmembers
     where WeChatID = #{wechatid}
   </select>
+   <select id="selectByPhonenum" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from tsports.tmembers
+    where PhoneNum = #{phonenum}
+  </select>
   <select id="select" resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />

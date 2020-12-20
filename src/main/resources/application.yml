@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: pro
 mybatis:   
   typeAliasesPackage: com.swinginwind.xql.pay.entity
 logging:

@@ -20,6 +20,8 @@ public interface TMembersMapper {
     
     TMembers selectByWechatId(String wechatid);
     
+    TMembers selectByPhonenum(String phonenum);
+    
     List<TMembers> select(TMembers param);
     
 }

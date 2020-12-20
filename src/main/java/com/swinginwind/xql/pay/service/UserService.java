@@ -16,4 +16,6 @@ public interface UserService {
 	
 	List<TMembers> select(TMembers param);
 
+	TMembers selectByPhone(String phone);
+
 }

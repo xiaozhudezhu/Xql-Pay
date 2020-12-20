@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.druid.util.StringUtils;
 import com.swinginwind.xql.pay.config.AppConfig;
 import com.swinginwind.xql.pay.entity.TMembers;
 import com.swinginwind.xql.pay.entity.VideoFile;
@@ -56,14 +57,20 @@ public class VideoController {
 		ModelAndView mv = null;
 		TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
 		if (memberT != null) {
-			userId = memberT.getUserid();
-			boolean permitted = videoService.isVideoFilePermitted(id, userId);
-			if (permitted) {
-				mv = new ModelAndView("video_play.html");
-				mv.addObject("video", videoService.selectVideoFileById(id));
-			} else {
-				mv = new ModelAndView("/error/401.html");
+			if(!"Y".equals(memberT.getUserstatus()) || StringUtils.isEmpty(memberT.getPhonenum())) {
+				mv = new ModelAndView("doregister.html");
 			}
+			else {
+				userId = memberT.getUserid();
+				boolean permitted = videoService.isVideoFilePermitted(id, userId);
+				if (permitted) {
+					mv = new ModelAndView("video_play.html");
+					mv.addObject("video", videoService.selectVideoFileById(id));
+				} else {
+					mv = new ModelAndView("/error/401.html");
+				}
+			}
+			
 		} else {
 			mv = new ModelAndView("dologin.html");
 		}

@@ -79,6 +79,11 @@ public class UserServiceImpl implements UserService {
 	public TMembers selectByUserId(int userId) {
 		return tMembersMapper.selectByPrimaryKey(userId);
 	}
+	
+	@Override
+	public TMembers selectByPhone(String phone) {
+		return tMembersMapper.selectByPhonenum(phone);
+	}
 
 	@Override
 	public int saveUserInfo(TMembers member) {

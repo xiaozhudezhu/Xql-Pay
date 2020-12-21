@@ -65,6 +65,7 @@ public class UserPageController {
         	member.setPassword(null);
         	member.setPhonenum(null);
     		userService.saveUserInfo(member);
+    		request.getSession().setAttribute("userInfo", userService.selectByUserId(member.getUserid()));
     		result.put("status", "success");
     		result.put("member", member);
         }

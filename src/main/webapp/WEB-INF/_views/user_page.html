@@ -45,6 +45,8 @@
 			aria-controls="videoConfigPage" role="tab" data-toggle="tab">视频配置</a></li>
 		<li role="presentation" id="videoPermitPageHead" style="display:none;""><a href="#videoPermitPage"
 			aria-controls="videoPermitPage" role="tab" data-toggle="tab">视频授权</a></li>
+		<li role="presentation" id="userListPageHead" style="display:none;""><a href="#userListPage"
+			aria-controls="userListPage" role="tab" data-toggle="tab">用户列表</a></li>
 		<!-- <li role="presentation"><a href="#myClass"
 			aria-controls="myClass" role="tab" data-toggle="tab">我的课程</a></li> -->
 	</ul>
@@ -54,7 +56,11 @@
 				<input type="hidden" name="userid" />
 				<div style="max-width: 800px; margin: auto; padding: 20px;">
 					<h4 id="registerInfoTitle" style="display: none;">
-						请完善您的会员资料
+						注册尚未完成，请完善您的会员资料
+						<hr>
+					</h4>
+					<h4 id="registerCompleteTitle" style="display: none;">
+						您是学球乐注册会员
 						<hr>
 					</h4>
 					<div class="form-group">
@@ -80,12 +86,18 @@
 					<div class="form-group">
 						<p class="col-sm-2 control-label" style="text-align: left;">手机号&nbsp;<font color="red">*</font></p>
 						<div class="col-sm-10">
-							<input class="form-control" required id="userInfo_phonenum"
-								name="phonenum"></input>
+							<div class="input-group">
+								<input class="form-control" required id="userInfo_phonenum"
+									name="phonenum"></input>
+								<div class="input-group-addon">
+								<button class="btn btn-primary" id="changePhoneNumBtn" style="border: 0; display: none;margin: -15px;"
+									onclick="changePhoneNum();return false;">已验证，点击变更</button>
+								</div>
+							</div>
 							<p class="small red">本公司将通过此号码邀请您加入本公司在各省市设立的学球乐会员群，您如接受邀请并加入学球乐会员群后，您可享受多种福利。</p>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group verify-code-form" style="display: none;">
 						<p class="col-sm-2 control-label" style="text-align: left;"></p>
 						<div class="col-sm-10">
 							<div class="input-group">
@@ -98,7 +110,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group verify-code-form" style="display: none;">
 						<p class="col-sm-2 control-label" style="text-align: left;"></p>
 						<div class="col-sm-10">
 							<button class="btn btn-primary" id="checkVerifyCodeBtn" style="width: 100%"
@@ -247,6 +259,10 @@
 			<iframe src="video/videoPermitPage"
 				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
 		</div>
+		<div role="tabpanel" class="tab-pane" id="userListPage">
+			<iframe src="userList"
+				style="width: 100%; height: calc(100% - 50px); border: 0; padding: 5px;"></iframe>
+		</div>
 	</div>
 </body>
 <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
@@ -278,13 +294,33 @@
 		//$('#userInfo_gender').bootstrapSwitch('setState', true);
 		$('#userInfo_city').val(userInfo.city).citypicker();
 		if(userInfo.admin && isPc())
-			$('#videoPermitPageHead,#videoConfigPageHead').show();
-		if(userInfo.phonenum)
-			$('#userInfo_phonenum').attr('verified', '1');
+			$('#videoPermitPageHead,#videoConfigPageHead,#userListPageHead').show();			
 		
 		checkUserInfo();
+		if(userInfo.userstatus == 'Y' && userInfo.phonenum) {
+			$('#registerInfoTitle').hide();
+			$('#registerCompleteTitle').show();
+		}
+		else {
+			$('#registerInfoTitle').show();
+			$('#registerCompleteTitle').hide();
+		}
+		if(userInfo.phonenum) {
+			$('#userInfo_phonenum').attr('verified', '1');
+			$('#changePhoneNumBtn').show();
+			$('#userInfo_phonenum').attr('disabled', 'disabled');
+		}
+		else {
+			$('.verify-code-form').show();
+		}
 
 	});
+	
+	function changePhoneNum() {
+		$('.verify-code-form').show();
+		$('#changePhoneNumBtn').hide();
+		$('#userInfo_phonenum').removeAttr('disabled');
+	}
 
 	function saveCurrentUser() {
 		var userInfo = {};
@@ -323,7 +359,11 @@
 	}
 
 	if (location.hash) {
-		$('#tabs a[href="' + location.hash + '"]').tab('show')
+		var hash = location.hash;
+		var i = hash.indexOf('?');
+		if(i >= 0)
+			hash = hash.substring(0, i);
+		$('#tabs a[href="' + hash + '"]').tab('show')
 	}
 
 	function paySelect() {
@@ -352,6 +392,7 @@
 	var redirect = getQueryString('redirect');
 	if (redirect) {
 		$('#registerInfoTitle').show();
+		$('#registerCompleteTitle').hide();
 		//$('#agreementDiv').show();
 	} else {
 		$('#agreeCheckBox').prop('checked', true).attr('disabled', 'disabled');
@@ -417,6 +458,9 @@
 			$.post('/userPage/checkVerifyCode', { code: code }, function(res) {
 				if (res.status == 'success') {
 					$('#userInfo_phonenum').attr('verified', '1');
+					$('.verify-code-form').hide();
+					$('#changePhoneNumBtn').show();
+					$('#userInfo_phonenum').attr('disabled', 'disabled');
 					layer.alert('手机号验证并绑定成功', { offset: '150px' });
 				} else {
 					layer.alert('验证失败', { offset: '150px' });

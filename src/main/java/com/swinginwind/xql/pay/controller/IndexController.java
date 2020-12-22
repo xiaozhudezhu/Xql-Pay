@@ -125,6 +125,11 @@ public class IndexController {
     	return "user_page.html";
     }
     
+    @RequestMapping(value = "/userList")
+    public String userList(){
+    	return "user_list.html";
+    }
+    
     @RequestMapping(value = "/scancode")
     public String scancode(){
     	return "scancode.html";

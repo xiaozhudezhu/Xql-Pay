@@ -1,0 +1,189 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta
+	content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+	name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<meta content="email=no" name="format-detection">
+<!-- 引入bootstrap样式 -->
+<link
+	href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- 引入bootstrap-table样式 -->
+<link
+	href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css"
+	rel="stylesheet">
+<link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+
+<title>用户列表</title>
+</head>
+<body ontouchstart class="">
+	<div class="row" style="margin: auto;">
+  		<div class="col-md-12" style="padding: 0px 20px;">
+  			<table id="userTable" class="table table-no-bordered" data-toggle="table"
+				data-side-pagination="client" data-url="/video/userList"
+				data-height="350" data-pagination="true" data-striped="true"
+				data-sortable="true" data-sort-name="userid" data-sort-order="asc"
+				data-show-columns="true" data-show-refresh="true" data-search="true"
+				data-search-on-enter-key="true" data-unique-id="userid" data-search-text=""
+				data-smart-display="true" data-page-size="25" data-click-to-select="true"
+				data-single-select="true">
+				<thead>
+					<tr>
+						<th data-field="state" data-checkbox="true"></th>
+						<th data-field="userid" data-align="center"
+							data-sortable="true" data-sort-name="userid"">编号</th>
+						<th data-field="name" data-align="center"
+							data-sortable="true" data-sort-name="name" data-formatter="formatUserName">姓名</th>
+						<th data-field="age" data-align="center" data-sortable="true"
+							data-sort-name="age">年龄</th>
+						<th data-field="gender" data-align="center" data-sortable="true"
+							data-sort-name="gender" data-formatter="formatGender">性别</th>
+						<th data-field="phonenum" data-align="center" data-sortable="true"
+							data-sort-name="phonenum">手机号</th>
+						<th data-field="id" data-align="center" data-sortable="true"
+							data-sort-name="id">邮箱</th>
+						<th data-field="yearsplay" data-align="center" data-sortable="true"
+							data-sort-name="yearsplay" data-formatter="formatYearsplay">球龄</th>
+						<th data-field="level" data-align="center" data-sortable="true"
+							data-sort-name="level" data-formatter="formatLevel">目前等级自测</th>
+						<th data-field="hourspractice" data-align="center" data-sortable="true"
+							data-sort-name="hourspractice" data-formatter="formatHourspractice">每月练球时长（小时）</th>
+						<th data-field="achivinglevel" data-align="center" data-sortable="true"
+							data-sort-name="achivinglevel" data-formatter="formatAchivinglevel">期望达到水平</th>
+						<th data-field="city" data-align="center" data-sortable="true"
+							data-sort-name="city">地区</th>
+						<th data-field="createtime" data-align="center" data-sortable="true"
+							data-sort-name="createtime">创建时间</th>
+						<th data-field="userstatus" data-align="center" data-sortable="true"
+							data-sort-name="userstatus" data-formatter="formatUserStatus">用户状态</th>
+						<th data-align="center" data-visible="false" data-formatter="operateFormatter">操作</th>
+					</tr>
+				</thead>
+			</table>
+  		</div>
+	</div>
+	
+</body>
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+
+<script
+	src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- bootstrap-table.min.js -->
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+<!-- 引入中文语言包 -->
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/moment-with-locales.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/static/layer/layer.js"></script>
+<div style="display: none" id="mapForm">
+	<select required class="form-control" name="hourspractice"
+		id="userInfo_hourspractice">
+		<option value="">请选择</option>
+		<option value="1">2</option>
+		<option value="2">4</option>
+		<option value="3">6</option>
+		<option value="4">8</option>
+		<option value="5">10</option>
+		<option value="6">12</option>
+		<option value="7">16</option>
+		<option value="8">20+</option>
+	</select>
+	<select required class="form-control" name="level"
+		id="userInfo_level">
+		<option value="">请选择</option>
+		<option value="1">初级（2.5以下）</option>
+		<option value="2">中级（2.5-4.0）</option>
+		<option value="3">高级（4.0以上）</option>
+	</select>
+	<select required class="form-control" name="achivinglevel"
+		id="userInfo_achivinglevel">
+		<option value="">请选择</option>
+		<option value="2">中级</option>
+		<option value="3">高级</option>
+		<option value="4">高级5.0以上</option>
+	</select>
+	<select required class="form-control" name="age"
+		id="userInfo_age">
+		<option value="">请选择</option>
+		<option value="1">20-29</option>
+		<option value="2">30-39</option>
+		<option value="3">40-49</option>
+		<option value="4">50-59</option>
+		<option value="5">60-69</option>
+		<option value="6">70+</option>
+	</select>
+	<select required class="form-control" name="yearsplay"
+		id="userInfo_yearsplay">
+		<option value="">请选择</option>
+		<option value="1">1年以下</option>
+		<option value="2">1-2年</option>
+		<option value="3">2-5年</option>
+		<option value="4">5-10年</option>
+		<option value="5">10-20年</option>
+		<option value="6">20年以上</option>
+	</select>
+</div>
+<script type="text/javascript">
+	
+	function formatUserStatus(value, record) {
+		return value == 'Y' ? '<div class="bg-success">已注册</div>' : '<div class="bg-danger">未注册</div>';
+	}
+	
+	function formatUserName(value, record) {
+		var img = record.headimgurl ? '<img class="img-rounded" width="30" src="' 
+				+ record.headimgurl + '" />&nbsp;' : '';
+		return img + value;
+	}	
+	
+	function formatAge(value, record) {
+		return value == 'Y' ? '<div class="bg-success">已注册</div>' : '<div class="bg-danger">未注册</div>';
+	}
+	
+	function formatGender(value, record) {
+		return value == 'm' ? '男' : '女';
+	}
+	
+	function formatYearsplay(value, record) {
+		return mapData['yearsplay'][value] || '';
+	}
+	
+	function formatLevel(value, record) {
+		return mapData['level'][value] || '';
+	}
+	
+	function formatAchivinglevel(value, record) {
+		return mapData['achivinglevel'][value] || '';
+	}
+	
+	function formatHourspractice(value, record) {
+		return mapData['hourspractice'][value] || '';
+	}
+	
+	
+	var mapData = {};
+	function initMap() {
+		$('#mapForm select').each(function(i, select) {
+			var data = {};
+			console.log($(select).attr('name'));
+			mapData[$(select).attr('name')] = data;
+			$(select).find('option').each(function(j, option) {
+				if($(option).val()) {
+					data[$(option).val()] = $(option).text();
+				}
+			});
+		})
+	}
+	initMap();
+
+	
+</script>
+
+
+</html>

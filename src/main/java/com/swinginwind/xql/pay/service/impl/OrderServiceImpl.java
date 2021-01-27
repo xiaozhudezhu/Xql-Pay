@@ -179,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
 				p = new VideoPermission();
 				allowedPermissionMap.put(fileTypeId, p);
 				p.setStartDate(new Date());
-				p.setDueDate(DateUtils.addMonths(p.getStartDate(), 24));
+				p.setDueDate(DateUtils.addMonths(p.getStartDate(), 12));
 				p.setOperateTime(new Date());
 				p.setOperateUserId(0);
 				p.setOperateUserName("系统管理员");
@@ -187,7 +187,7 @@ public class OrderServiceImpl implements OrderService {
 				p.setVideoId(fileTypeId);
 			}
 			else if(p.getDueDate() != null) {
-				p.setDueDate(DateUtils.addMonths(p.getDueDate(), 3));
+				p.setDueDate(DateUtils.addMonths(p.getDueDate(), 12));
 				p.setOperateTime(new Date());
 				p.setOperateUserId(0);
 				p.setOperateUserName("系统管理员");

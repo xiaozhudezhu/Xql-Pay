@@ -1,7 +1,5 @@
 package com.swinginwind.xql.pay.service.impl;
 
-import static org.mockito.Matchers.intThat;
-
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -14,6 +12,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -46,6 +45,9 @@ public class OrderServiceImpl implements OrderService {
 	
 	@Autowired
 	private VideoService videoService;
+	
+	@Value("${xql.video.valid-duration:12}")
+	private int videoValidDuration;
 
 	@Override
 	public int deleteByPrimaryKey(Integer id) {
@@ -179,7 +181,7 @@ public class OrderServiceImpl implements OrderService {
 				p = new VideoPermission();
 				allowedPermissionMap.put(fileTypeId, p);
 				p.setStartDate(new Date());
-				p.setDueDate(DateUtils.addMonths(p.getStartDate(), 12));
+				p.setDueDate(DateUtils.addMonths(p.getStartDate(), videoValidDuration));
 				p.setOperateTime(new Date());
 				p.setOperateUserId(0);
 				p.setOperateUserName("系统管理员");
@@ -187,7 +189,7 @@ public class OrderServiceImpl implements OrderService {
 				p.setVideoId(fileTypeId);
 			}
 			else if(p.getDueDate() != null) {
-				p.setDueDate(DateUtils.addMonths(p.getDueDate(), 12));
+				p.setDueDate(DateUtils.addMonths(p.getDueDate(), videoValidDuration));
 				p.setOperateTime(new Date());
 				p.setOperateUserId(0);
 				p.setOperateUserName("系统管理员");

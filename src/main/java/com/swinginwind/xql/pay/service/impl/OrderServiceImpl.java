@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.swinginwind.xql.pay.config.AppConfig;
 import com.swinginwind.xql.pay.entity.BaseOrder;
 import com.swinginwind.xql.pay.entity.PayRecord;
 import com.swinginwind.xql.pay.entity.TMembers;
@@ -46,8 +47,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private VideoService videoService;
 	
-	@Value("${xql.video.valid-duration:12}")
-	private int videoValidDuration;
+	@Autowired
+	private AppConfig appConfig;
 
 	@Override
 	public int deleteByPrimaryKey(Integer id) {
@@ -181,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
 				p = new VideoPermission();
 				allowedPermissionMap.put(fileTypeId, p);
 				p.setStartDate(new Date());
-				p.setDueDate(DateUtils.addMonths(p.getStartDate(), videoValidDuration));
+				p.setDueDate(DateUtils.addMonths(p.getStartDate(), appConfig.getVideoValidDuration()));
 				p.setOperateTime(new Date());
 				p.setOperateUserId(0);
 				p.setOperateUserName("系统管理员");
@@ -189,7 +190,7 @@ public class OrderServiceImpl implements OrderService {
 				p.setVideoId(fileTypeId);
 			}
 			else if(p.getDueDate() != null) {
-				p.setDueDate(DateUtils.addMonths(p.getDueDate(), videoValidDuration));
+				p.setDueDate(DateUtils.addMonths(p.getDueDate(), appConfig.getVideoValidDuration()));
 				p.setOperateTime(new Date());
 				p.setOperateUserId(0);
 				p.setOperateUserName("系统管理员");

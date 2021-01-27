@@ -234,6 +234,7 @@ public class VideoController {
 		mv = new ModelAndView("video_pay.html");
 		if(videoId != null)
 			mv.addObject("video", videoService.selectVideoFileById(videoId));
+		mv.addObject("videoValidDuration", appConfig.getVideoValidDuration());
 		return mv;
 	}
 

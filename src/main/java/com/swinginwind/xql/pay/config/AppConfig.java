@@ -16,6 +16,8 @@ public class AppConfig {
 	private String xqlUrl;
 	
 	private String fileDir;
+	
+	private int videoValidDuration = 12;
 
 	public List<Integer> getAdminIds() {
 		return adminIds;
@@ -39,6 +41,20 @@ public class AppConfig {
 
 	public void setFileDir(String fileDir) {
 		this.fileDir = fileDir;
+	}
+
+	/**
+	 * @return the videoValidDuration
+	 */
+	public int getVideoValidDuration() {
+		return videoValidDuration;
+	}
+
+	/**
+	 * @param videoValidDuration the videoValidDuration to set
+	 */
+	public void setVideoValidDuration(int videoValidDuration) {
+		this.videoValidDuration = videoValidDuration;
 	}
 
 

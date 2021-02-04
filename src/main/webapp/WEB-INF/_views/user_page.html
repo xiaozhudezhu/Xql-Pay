@@ -296,7 +296,6 @@
 		if(userInfo.admin && isPc())
 			$('#videoPermitPageHead,#videoConfigPageHead,#userListPageHead').show();			
 		
-		checkUserInfo();
 		if(userInfo.userstatus == 'Y' && userInfo.phonenum) {
 			$('#registerInfoTitle').hide();
 			$('#registerCompleteTitle').show();
@@ -313,7 +312,7 @@
 		else {
 			$('.verify-code-form').show();
 		}
-
+		checkUserInfo();
 	});
 	
 	function changePhoneNum() {
@@ -337,7 +336,7 @@
 					if (res.member.userstatus == 'N')
 						layer.alert('请完整填写您的会员资料', { offset: '150px' });
 					else
-						layer.alert('保存成功，现可去主页观看测试付费课程。', { offset: '150px' }, function() {
+						layer.alert('保存成功，现可去主页观看免费课程。', { offset: '150px' }, function() {
 							top.postMessage({
 								type : 'redirect',
 								url : '/'
@@ -346,7 +345,7 @@
 				} else if (res.member.userstatus == 'N')
 					layer.alert('请完整填写您的会员资料', { offset: '150px' });
 				else
-					layer.alert('保存成功，现可去主页观看测试付费课程。', { offset: '150px' }, function() {
+					layer.alert('保存成功，现可去主页观看免费课程。', { offset: '150px' }, function() {
 						top.postMessage({
 							type : 'redirect',
 							url : decodeURIComponent(redirect)
@@ -395,8 +394,10 @@
 		$('#registerCompleteTitle').hide();
 		//$('#agreementDiv').show();
 	} else {
-		$('#agreeCheckBox').prop('checked', true).attr('disabled', 'disabled');
+		//不知为何
+		//$('#agreeCheckBox').prop('checked', true).attr('disabled', 'disabled');
 	}
+	$('#agreeCheckBox').prop('checked', true);
 
 	function showAgreement() {
 		top.postMessage({

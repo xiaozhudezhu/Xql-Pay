@@ -57,11 +57,10 @@ public class VideoController {
 		ModelAndView mv = null;
 		TMembers memberT = (TMembers) request.getSession().getAttribute("userInfo");
 		if (memberT != null) {
-			//暂时取消注册用户判断
-			/*if(!"Y".equals(memberT.getUserstatus()) || StringUtils.isEmpty(memberT.getPhonenum())) {
+			if(appConfig.isMustRegister() && (!"Y".equals(memberT.getUserstatus()) || StringUtils.isEmpty(memberT.getPhonenum()))) {
 				mv = new ModelAndView("doregister.html");
 			}
-			else {*/
+			else {
 				userId = memberT.getUserid();
 				boolean permitted = videoService.isVideoFilePermitted(id, userId);
 				if (permitted) {
@@ -70,7 +69,7 @@ public class VideoController {
 				} else {
 					mv = new ModelAndView("/error/401.html");
 				}
-			/*}*/
+			}
 			
 		} else {
 			mv = new ModelAndView("dologin.html");

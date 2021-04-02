@@ -463,6 +463,7 @@
 					$('#changePhoneNumBtn').show();
 					$('#userInfo_phonenum').attr('disabled', 'disabled');
 					layer.alert('手机号验证并绑定成功', { offset: '150px' });
+					checkUserInfo();
 				} else {
 					layer.alert('验证失败', { offset: '150px' });
 				}

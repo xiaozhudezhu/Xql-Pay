@@ -18,6 +18,8 @@ public class AppConfig {
 	private String fileDir;
 	
 	private int videoValidDuration = 12;
+	
+	private boolean mustRegister = true;
 
 	public List<Integer> getAdminIds() {
 		return adminIds;
@@ -55,6 +57,14 @@ public class AppConfig {
 	 */
 	public void setVideoValidDuration(int videoValidDuration) {
 		this.videoValidDuration = videoValidDuration;
+	}
+
+	public boolean isMustRegister() {
+		return mustRegister;
+	}
+
+	public void setMustRegister(boolean mustRegister) {
+		this.mustRegister = mustRegister;
 	}
 
 
